@@ -19,6 +19,8 @@ class Post extends Model
         'title',
         'body',
         'image',
+        'location',
+        'tags' => 'array',
         'user_id',
         'slug',
         'event_date'

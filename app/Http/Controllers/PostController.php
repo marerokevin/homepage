@@ -55,7 +55,9 @@ class PostController extends Controller
             'title' => 'required|string|max:255',
             'body' => 'required|string',
             'event_date' => 'nullable|date',
-            'image.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:2048'
+            'location' => 'nullable|string|max:255',
+            'image.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'tags' => 'nullable|string|max:255' // <-- New
         ]);
 
         // 1. Handle Multiple Image Uploads
@@ -67,6 +69,10 @@ class PostController extends Controller
             }
         }
 
+        $tags = $request->tags
+        ? array_filter(array_map('trim', explode(',', $request->tags)))
+        : [];
+
         // 2. Generate Unique Slug
         $slug = Str::slug($request->title) . '-' . rand(100, 999);
 
@@ -77,6 +83,7 @@ class PostController extends Controller
             'event_date' => $request->event_date ?? now()->format('Y-m-d'),
             'slug'       => $slug,
             'image'      => $imagePaths, // This will be saved as JSON thanks to the $casts in Post model
+            'tags' => $tags, // <-- Save tags here
         ]);
 
         return redirect()->back()->with('success', 'Post created successfully with ' . count($imagePaths) . ' images!');
@@ -95,4 +102,37 @@ class PostController extends Controller
 
         return redirect()->route('updates')->with('success', 'Post deleted!');
     }
+
+    // update
+    public function update(Request $request, Post $post)
+    {
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'body' => 'required|string',
+            'event_date' => 'required|date',
+            'location' => 'nullable|string|max:255',
+            'image.*' => 'nullable|image|max:2048',
+            'tags' => 'nullable|string|max:255' // <-- New
+        ]);
+
+        $post->update($request->only('title', 'body', 'event_date', 'location'));
+
+        // Handle tags
+        $post->tags = $request->tags
+            ? array_filter(array_map('trim', explode(',', $request->tags)))
+            : [];
+        $post->save();
+
+
+        if ($request->hasFile('image')) {
+            foreach ($request->file('image') as $file) {
+                $path = $file->store('posts', 'public');
+                $post->image = array_merge($post->image ?? [], [$path]);
+            }
+            $post->save();
+        }
+
+        return redirect()->back()->with('success', 'Post updated successfully!');
+    }
+
 }
