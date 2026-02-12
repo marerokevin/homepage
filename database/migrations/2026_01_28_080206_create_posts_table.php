@@ -16,7 +16,8 @@ return new class extends Migration
             $table->string('slug')->unique(); // Don't forget your slug!
             $table->text('body');
             $table->date('event_date')->nullable(); // Add your new date column here too
-            $table->string('image')->nullable();
+            $table->text('image')->nullable();
+            $table->string('location')->nullable(); // NEW COLUMN
             $table->timestamps();
         });
     }

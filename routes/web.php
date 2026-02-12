@@ -26,13 +26,22 @@ Route::get('/updates/{slug?}', [PostController::class, 'index'])->name('updates'
 // Redirect the old /posts path to /updates to prevent conflicts
 Route::get('/posts', fn() => redirect()->route('updates'));
 
+// This is additional post
+Route::patch('/manage-posts/{post}', [PostController::class, 'update'])
+    ->name('posts.update');
+
+
 // --- Protected Routes ---
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', fn() => view('dashboard'))->name('dashboard');
 
-    // BLOG ACTIONS: Changed the URI to /manage-posts to avoid clashing with /updates
+    // BLOG ACTIONS
     Route::post('/manage-posts', [PostController::class, 'store'])->name('posts.store');
     Route::delete('/manage-posts/{post}', [PostController::class, 'destroy'])->name('posts.destroy');
+
+    // ✅ ADD THESE
+    Route::get('/manage-posts/{post}/edit', [PostController::class, 'edit'])->name('posts.edit');
+    Route::put('/manage-posts/{post}', [PostController::class, 'update'])->name('posts.update');
 
     // Profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
