@@ -4,33 +4,201 @@
 @section('title', 'Contact Us')
 
 @section('content')
-<section class="max-w-5xl mx-auto">
-    <section id="printing" class="py-12">
-        <h3 class="text-3xl font-bold mt-8">Printing</h3>
-            <p class="text-lg leading-relaxed">
-                We provide printed materials for any type of product. Our extensive network of local printers enables us to reduce delivery time and costs – a competitive edge to better serve our clients.
+
+<section class="max-w-6xl mx-auto px-6 py-16">
+
+    <div class="grid md:grid-cols-2 gap-12 items-start">
+
+        <!-- President -->
+        <div>
+            <h1 class="text-4xl font-extrabold text-gray-900 dark:text-white mb-4">
+                Contact Us
+            </h1>
+
+            <p class="text-gray-600 dark:text-gray-400 mb-6 leading-relaxed">
+                Have questions, suggestions, or partnership inquiries?
+                Send us a message and we’ll get back to you as soon as possible.
             </p>
-            <ul class="list-disc list-inside space-y-2 text-lg">
-                <li>Offset, Flexo-graphic and silk-screen printing</li>
-                <li>Document printing, binding and finishing</li>
-                <li>Label printing</li>
-            </ul>
-    </section>
+
+            <div class="space-y-4 text-sm text-gray-600 dark:text-gray-400">
+                <div>
+                    <span class="font-bold text-gray-800 dark:text-white">Email:</span>
+                    info@example.com
+                </div>
+                <div>
+                    <span class="font-bold text-gray-800 dark:text-white">Phone:</span>
+                    +63 900 000 0000
+                </div>
+                <div>
+                    <span class="font-bold text-gray-800 dark:text-white">Address:</span>
+                    San Adriano, Lipa, Batangas
+                </div>
+            </div>
+        </div>
 
 
-    <section id="packaging" class="py-12">
-        <h2 class="text-3xl font-bold mt-8">Packaging</h2>
-            <p class="text-lg leading-relaxed">
-                Our team of specialists design and develop any type of packaging for all industries. We can help you engineer and deliver at the shortest time with our "best and unbeatable price." Plus, we effectively manage our logistics to deliver these to you – anytime and whenever you need it.
-            </p>
-    </section>
+        <div class="grid md:grid-cols-3">
+            <div class="space-y-4 text-sm text-gray-600 dark:text-gray-400">
+                <div>
+                    <span class="font-bold text-gray-800 dark:text-white">Email:</span>
+                    info@example.com
+                </div>
+                <div>
+                    <span class="font-bold text-gray-800 dark:text-white">Phone:</span>
+                    +63 900 000 0000
+                </div>
+                <div>
+                    <span class="font-bold text-gray-800 dark:text-white">Address:</span>
+                    San Adriano, Lipa, Batangas
+                </div>
+            </div>
+            <div class="space-y-4 text-sm text-gray-600 dark:text-gray-400">
+                <div>
+                    <span class="font-bold text-gray-800 dark:text-white">Email:</span>
+                    info@example.com
+                </div>
+                <div>
+                    <span class="font-bold text-gray-800 dark:text-white">Phone:</span>
+                    +63 900 000 0000
+                </div>
+                <div>
+                    <span class="font-bold text-gray-800 dark:text-white">Address:</span>
+                    San Adriano, Lipa, Batangas
+                </div>
+            </div>
+        </div>
 
-    <section id="kitting" class="py-12">
-        <h2 class="text-3xl font-bold mt-8">Kitting</h2>
-            <p class="text-lg leading-relaxed">
-                We provide kitting as part of a complete documentation engineering, fulfillment and delivery solution or as a stand-alone service, as needed. We offer scalable kitting solutions that combine our expertise in inventory management, quality control, just-in-time delivery and total customer satisfaction. Our network of professionals at our global facilities will work with you to assess your needs and will design a kitting program that meets them, no matter where you and your customers are located.
-            </p>
-    </section>
+        <div class="grid md:grid-cols-3">
+            <div class="space-y-4 text-sm text-gray-600 dark:text-gray-400">
+                <div>
+                    <span class="font-bold text-gray-800 dark:text-white">Email:</span>
+                    info@example.com
+                </div>
+                <div>
+                    <span class="font-bold text-gray-800 dark:text-white">Phone:</span>
+                    +63 900 000 0000
+                </div>
+                <div>
+                    <span class="font-bold text-gray-800 dark:text-white">Address:</span>
+                    San Adriano, Lipa, Batangas
+                </div>
+            </div>
+            <div class="space-y-4 text-sm text-gray-600 dark:text-gray-400">
+                <div>
+                    <span class="font-bold text-gray-800 dark:text-white">Email:</span>
+                    info@example.com
+                </div>
+                <div>
+                    <span class="font-bold text-gray-800 dark:text-white">Phone:</span>
+                    +63 900 000 0000
+                </div>
+                <div>
+                    <span class="font-bold text-gray-800 dark:text-white">Address:</span>
+                    San Adriano, Lipa, Batangas
+                </div>
+            </div>
+            <div class="space-y-4 text-sm text-gray-600 dark:text-gray-400">
+                <div>
+                    <span class="font-bold text-gray-800 dark:text-white">Email:</span>
+                    info@example.com
+                </div>
+                <div>
+                    <span class="font-bold text-gray-800 dark:text-white">Phone:</span>
+                    +63 900 000 0000
+                </div>
+                <div>
+                    <span class="font-bold text-gray-800 dark:text-white">Address:</span>
+                    San Adriano, Lipa, Batangas
+                </div>
+            </div>
+            <div class="space-y-4 text-sm text-gray-600 dark:text-gray-400">
+                <div>
+                    <span class="font-bold text-gray-800 dark:text-white">Email:</span>
+                    info@example.com
+                </div>
+                <div>
+                    <span class="font-bold text-gray-800 dark:text-white">Phone:</span>
+                    +63 900 000 0000
+                </div>
+                <div>
+                    <span class="font-bold text-gray-800 dark:text-white">Address:</span>
+                    San Adriano, Lipa, Batangas
+                </div>
+            </div>
+        </div>
+        </div>
+        <!-- RIGHT SIDE (FORM) -->
+        <div class="bg-white dark:bg-gray-800 shadow-xl rounded-2xl p-8">
+
+            @if(session('success'))
+                <div class="mb-6 p-4 bg-green-100 text-green-700 rounded-lg">
+                    {{ session('success') }}
+                </div>
+            @endif
+
+            @if ($errors->any())
+                <div class="mb-6 p-4 bg-red-100 text-red-700 rounded-lg">
+                    <ul class="text-sm list-disc list-inside">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            <form method="POST" action="{{ route('contact.submit') }}">
+                @csrf
+
+                <div class="space-y-6">
+
+                    <div>
+                        <label class="block text-sm font-bold mb-2">Full Name</label>
+                        <input type="text"
+                               name="name"
+                               value="{{ old('name') }}"
+                               required
+                               class="w-full rounded-lg border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-white focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-bold mb-2">Email Address</label>
+                        <input type="email"
+                               name="email"
+                               value="{{ old('email') }}"
+                               required
+                               class="w-full rounded-lg border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-white focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-bold mb-2">Subject</label>
+                        <input type="text"
+                               name="subject"
+                               value="{{ old('subject') }}"
+                               required
+                               class="w-full rounded-lg border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-white focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-bold mb-2">Message</label>
+                        <textarea name="message"
+                                  rows="5"
+                                  required
+                                  class="w-full rounded-lg border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-white focus:ring-indigo-500 focus:border-indigo-500">{{ old('message') }}</textarea>
+                    </div>
+
+                    <div>
+                        <button type="submit"
+                                class="w-full bg-indigo-600 hover:bg-indigo-700 text-black font-bold py-3 rounded-lg shadow-md transition">
+                            Send Message
+                        </button>
+                    </div>
+
+                </div>
+            </form>
+
+        </div>
+
+    </div>
 
 </section>
 @endsection

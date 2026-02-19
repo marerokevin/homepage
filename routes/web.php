@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\ContactController;
 use Illuminate\Support\Facades\Route;
 
 // --- Authentication ---
@@ -17,7 +18,9 @@ Route::view('/documentation', 'documentation')->name('documentation');
 Route::view('/marketing-communications', 'marketing-communications')->name('marketing.communication');
 Route::view('/technology', 'technology')->name('technology');
 Route::view('/services', 'services')->name('services');
-Route::view('/contact-us', 'contact-us')->name('contact-us');
+Route::post('/contact-us', [ContactController::class, 'submit'])
+    ->name('contact.submit');
+
 
 // --- THE FIX: Blog & Updates ---
 // This handles the list AND the single post view via the slug.
@@ -48,5 +51,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+Route::get('/contact-us', function () {
+    return view('contact-us');
+})->name('contact');
+
+Route::post('/contact-us', [ContactController::class, 'submit'])
+    ->name('contact.submit');
 
 require __DIR__.'/auth.php';
