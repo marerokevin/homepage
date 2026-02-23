@@ -86,6 +86,10 @@
                 {{ $singlePost->title }}
             </h1>
 
+            <div class="text-xs text-gray-500 dark:text-gray-400 mb-2">
+                {{ $singlePost->location ?? 'Location not specified' }}
+            </div>
+
             @if($singlePost->image && is_array($singlePost->image))
                 <div x-data="{ activeImage: 0, images: {{ json_encode($singlePost->image) }} }" class="relative group mb-8">
 
@@ -96,7 +100,7 @@
                                 [x-cloak] { display: none !important; }
                                 </style>
                                 <img :src="'/storage/' + path"
-                                class="w-full h-28 object-contain bg-black"
+                                class="w-full h-50 object-contain bg-black"
                                 alt=""
                                 loading="lazy">
                             </div>
@@ -166,7 +170,7 @@
                     <div class="relative w-full h-20 overflow-hidden rounded-2xl shadow-lg bg-gray-100 dark:bg-gray-900">
                         <img
                             src="{{ asset('storage/' . $post->image[0]) }}"
-                            class="h-48 w-full object-contain"
+                            class="h-full w-full object-cover"
                             alt="{{ $post->title }}"
                             loading="lazy">
                     </div>

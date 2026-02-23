@@ -5,13 +5,13 @@
 
 @section('content')
 
-<section class="max-w-6xl mx-auto px-6 py-16">
+<section id="management-team" class="max-w-6xl mx-auto px-6 py-16">
 
-    <div class="grid md:grid-cols-2 gap-12 items-start">
+    <div class="gap-12 items-start">
 
-        <!-- President -->
-        <div>
-            <h1 class="text-4xl font-extrabold text-gray-900 dark:text-white mb-4">
+        <!-- Contact us-->
+        <div class="py-2">
+            <h1 class="py-2 text-4xl font-extrabold text-gray-900 dark:text-white mb-4">
                 Contact Us
             </h1>
 
@@ -20,114 +20,126 @@
                 Send us a message and we’ll get back to you as soon as possible.
             </p>
 
-            <div class="space-y-4 text-sm text-gray-600 dark:text-gray-400">
+            <!-- President -->
+            <div class="py-9 space-y-0 text-sm text-gray-600 dark:text-gray-400">
                 <div>
-                    <span class="font-bold text-gray-800 dark:text-white">Email:</span>
-                    info@example.com
+                    <span class="font-bold text-xl text-gray-950 dark:text-white">Moritomi Sakai</span>
+                </div>
+                <div>
+                    President
                 </div>
                 <div>
                     <span class="font-bold text-gray-800 dark:text-white">Phone:</span>
-                    +63 900 000 0000
-                </div>
-                <div>
-                    <span class="font-bold text-gray-800 dark:text-white">Address:</span>
-                    San Adriano, Lipa, Batangas
+                    +(6343) 455 6907
                 </div>
             </div>
         </div>
 
-
-        <div class="grid md:grid-cols-3">
-            <div class="space-y-4 text-sm text-gray-600 dark:text-gray-400">
+        <div class="grid py-9 md:grid-cols-3">
+            <div class="space-y-0 text-sm text-gray-600 dark:text-gray-400">
+                <div>
+                    <span class="font-bold text-xl text-gray-800 dark:text-white">Ikuma Furuya</span>
+                </div>
+                <div>
+                    Package Design and Development
+                </div>
                 <div>
                     <span class="font-bold text-gray-800 dark:text-white">Email:</span>
-                    info@example.com
+                    ikuma.furuya@crestecphil.com.ph
                 </div>
                 <div>
                     <span class="font-bold text-gray-800 dark:text-white">Phone:</span>
-                    +63 900 000 0000
-                </div>
-                <div>
-                    <span class="font-bold text-gray-800 dark:text-white">Address:</span>
-                    San Adriano, Lipa, Batangas
+                    +(6343) 455 6907 loc. 129
                 </div>
             </div>
-            <div class="space-y-4 text-sm text-gray-600 dark:text-gray-400">
+            <div class="space-y-0 text-sm text-gray-600 dark:text-gray-400">
+                <div>
+                    <span class="font-bold text-xl text-gray-800 dark:text-white">Takashi Sarukawa</span>
+                </div>
+                <div>
+                    General Manager
+                </div>
                 <div>
                     <span class="font-bold text-gray-800 dark:text-white">Email:</span>
-                    info@example.com
+                    takashi.sarukawa@crestecphil.com.ph
                 </div>
                 <div>
                     <span class="font-bold text-gray-800 dark:text-white">Phone:</span>
-                    +63 900 000 0000
-                </div>
-                <div>
-                    <span class="font-bold text-gray-800 dark:text-white">Address:</span>
-                    San Adriano, Lipa, Batangas
-                </div>
-            </div>
-        </div>
-
-        <div class="grid md:grid-cols-3">
-            <div class="space-y-4 text-sm text-gray-600 dark:text-gray-400">
-                <div>
-                    <span class="font-bold text-gray-800 dark:text-white">Email:</span>
-                    info@example.com
-                </div>
-                <div>
-                    <span class="font-bold text-gray-800 dark:text-white">Phone:</span>
-                    +63 900 000 0000
-                </div>
-                <div>
-                    <span class="font-bold text-gray-800 dark:text-white">Address:</span>
-                    San Adriano, Lipa, Batangas
-                </div>
-            </div>
-            <div class="space-y-4 text-sm text-gray-600 dark:text-gray-400">
-                <div>
-                    <span class="font-bold text-gray-800 dark:text-white">Email:</span>
-                    info@example.com
-                </div>
-                <div>
-                    <span class="font-bold text-gray-800 dark:text-white">Phone:</span>
-                    +63 900 000 0000
-                </div>
-                <div>
-                    <span class="font-bold text-gray-800 dark:text-white">Address:</span>
-                    San Adriano, Lipa, Batangas
-                </div>
-            </div>
-            <div class="space-y-4 text-sm text-gray-600 dark:text-gray-400">
-                <div>
-                    <span class="font-bold text-gray-800 dark:text-white">Email:</span>
-                    info@example.com
-                </div>
-                <div>
-                    <span class="font-bold text-gray-800 dark:text-white">Phone:</span>
-                    +63 900 000 0000
-                </div>
-                <div>
-                    <span class="font-bold text-gray-800 dark:text-white">Address:</span>
-                    San Adriano, Lipa, Batangas
-                </div>
-            </div>
-            <div class="space-y-4 text-sm text-gray-600 dark:text-gray-400">
-                <div>
-                    <span class="font-bold text-gray-800 dark:text-white">Email:</span>
-                    info@example.com
-                </div>
-                <div>
-                    <span class="font-bold text-gray-800 dark:text-white">Phone:</span>
-                    +63 900 000 0000
-                </div>
-                <div>
-                    <span class="font-bold text-gray-800 dark:text-white">Address:</span>
-                    San Adriano, Lipa, Batangas
+                    +(6343) 455 6907 loc. 111
                 </div>
             </div>
         </div>
+
+        <div class="py-9 grid md:grid-cols-4 gap1.5">
+            <div class="space-y-0 text-sm text-gray-600 dark:text-gray-400">
+                <div>
+                    <span class="font-bold text-xl text-gray-800 dark:text-white">Bonamarie Manaloto</span>
+                </div>
+                <div>
+                    Accounting Manager
+                </div>
+                <div>
+                    <span class="font-bold text-gray-800 dark:text-white">Email:</span>
+                    bonamarie.manaloto@crestecphil.com.ph
+                </div>
+                <div>
+                    <span class="font-bold text-gray-800 dark:text-white">Phone:</span>
+                    +(6343) 455 6907 loc. 108
+                </div>
+            </div>
+            <div class="space-y-0 text-sm text-gray-600 dark:text-gray-400">
+                <div>
+                    <span class="font-bold text-xl text-gray-800 dark:text-white">Jerlyn Salay</span>
+                </div>
+                <div>
+                    Administration Manager
+                </div>
+                <div>
+                    <span class="font-bold text-gray-800 dark:text-white">Email:</span>
+                    jerlyn.salay@crestecphil.com.ph
+                </div>
+                <div>
+                    <span class="font-bold text-gray-800 dark:text-white">Phone:</span>
+                    +(6343) 455 6907 loc. 104
+                </div>
+            </div>
+            <div class="space-y-0 text-sm text-gray-600 dark:text-gray-400">
+                <div>
+                    <span class="font-bold text-xl text-gray-800 dark:text-white">Marivic Villamayor</span>
+                </div>
+                <div>
+                    Procurement/Sales Manager
+                </div>
+                <div>
+                    <span class="font-bold text-gray-800 dark:text-white">Email:</span>
+                    marivic.villamayor@crestecphil.com.ph
+                </div>
+                <div>
+                    <span class="font-bold text-gray-800 dark:text-white">Phone:</span>
+                    +(6343) 455 6907 loc. 115
+                </div>
+            </div>
+            <div class="space-y-0 text-sm text-gray-600 dark:text-gray-400">
+                <div>
+                    <span class="font-bold text-xl text-gray-800 dark:text-white">Cathee Espejon</span>
+                </div>
+                <div>
+                    QA/Sales Manager
+                </div>
+                <div>
+                    <span class="font-bold text-gray-800 dark:text-white">Email:</span>
+                    cathee.espejon@crestecphil.com.ph
+                </div>
+                <div>
+                    <span class="font-bold text-gray-800 dark:text-white">Phone:</span>
+                    +(6343) 455 6907 loc. 115
+                </div>
+            </div>
         </div>
         <!-- RIGHT SIDE (FORM) -->
+        <h2 class="text-3xl font-extrabold text-gray-900 dark:text-white mb-8 text-left">
+            Contact Form
+        </h2>
         <div class="bg-white dark:bg-gray-800 shadow-xl rounded-2xl p-8">
 
             @if(session('success'))
@@ -195,10 +207,72 @@
 
                 </div>
             </form>
+        </div>
+    </div>
+</section>
+
+    <!-- OUR OFFICE -->
+    <section id="local-offices" class="max-w-6xl mx-auto px-6 py-16">
+    <div class="mt-20 border-t border-gray-200 dark:border-gray-700 pt-16">
+
+        <h2 class="text-3xl font-extrabold text-gray-900 dark:text-white mb-8 text-left">
+            Our Office
+        </h2>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+
+            <!-- Office Details -->
+            <div class="space-y-6 text-gray-600 dark:text-gray-400">
+
+                <div>
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                        Crestec Philippines, Inc.
+                    </h3>
+                    <p>
+                        Blk 19 Lot 2<br>
+                        Units 1-4, CRI Bldg. 5<br>
+                        Lima Technology Center<br>
+                        San Lucas, Lipa City<br>
+                        Batangas, Philippines
+                    </p>
+                </div>
+
+                <div>
+                    <p>
+                        <span class="font-semibold text-gray-900 dark:text-white">Phone:</span>
+                        +63 (43) 455 6907
+                    </p>
+                    <p>
+                        <span class="font-semibold text-gray-900 dark:text-white">Email:</span>
+                        noreply@crestecphil.com.ph
+                    </p>
+                </div>
+
+                <div>
+                    <p>
+                        <span class="font-semibold text-gray-900 dark:text-white">Office Hours:</span><br>
+                        Monday – Friday<br>
+                        8:00 AM – 5:00 PM
+                    </p>
+                </div>
+
+            </div>
+
+            <!-- Google Map Embed -->
+            <div class="w-full h-80 rounded-xl overflow-hidden shadow-lg">
+                <iframe
+                    src="https://www.google.com/maps?q=Crestec%20Philippines%20Inc%20Lipa%20Batangas&output=embed"
+                    width="100%"
+                    height="100%"
+                    style="border:0;"
+                    allowfullscreen=""
+                    loading="lazy">
+                </iframe>
+            </div>
 
         </div>
 
+</section>
     </div>
-
 </section>
 @endsection

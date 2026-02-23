@@ -4,11 +4,12 @@
 
 @section('content')
 <!-- Hero Section -->
-<section class="pt-32 pb-24 bg-gradient-to-r from-blue-700 to-blue-500 text-white text-center">
+<section class="pt-32 pb-24 bg-gradient-to-r from-blue-700 to-blue-500 text-white text-left">
     <div class="max-w-4xl mx-auto px-4">
         <h1 class="text-5xl font-bold mb-6">a Global Documentation, Localization & Packaging Solutions</h1>
-        <p class="text-xl mb-8 opacity-90">what to put here?</p>
-        <a href="#" class="px-8 py-4 bg-white text-blue-700 font-semibold rounded-lg shadow hover:bg-gray-100 transition">Learn More</a>
+        <p class="text-xl mb-8 opacity-90">In a rapidly globalizing world, we turn innovation into practical solutions for our customers. Supported by research and green technology, we ensure value and reliability.</p>
+        <a href="#" class="px-8 py-4 bg-blue-600 text-white font-semibold rounded-lg shadow hover:bg-blue-300 hover:text-blue-700 transition">Contact Us</a>
+        <a href="#" class="px-8 py-4 bg-white text-blue-700 font-semibold rounded-lg shadow hover:bg-gray-300 hover:text-blue-900 transition">Learn More</a>
     </div>
 </section>
 
