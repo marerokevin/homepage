@@ -775,6 +775,18 @@
     </div>
 
             <div class="hidden sm:flex sm:items-center sm:ms-6">
+            <div class="px-4 py-2">
+            <button id="theme-toggle" class="p-2 border-gray-300 rounded-md ...">
+                
+                <svg class="hidden dark:block w-5 h-5" fill="yellow" viewBox="0 0 20 20">
+                    <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zM4.22 4.22a1 1 0 011.42 0l.7.7a1 1 0 11-1.42 1.42l-.7-.7a1 1 0 010-1.42zM2 10a1 1 0 011-1h1a1 1 0 110 2H3a1 1 0 01-1-1zm8 5a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zm6-5a1 1 0 011-1h1a1 1 0 110 2h-1a1 1 0 01-1-1zM14.36 5.64a1 1 0 010-1.42l.7-.7a1 1 0 111.42 1.42l-.7.7a1 1 0 01-1.42 0zM5.64 14.36a1 1 0 010 1.42l-.7.7a1 1 0 11-1.42-1.42l.7-.7a1 1 0 011.42 0zM10 6a4 4 0 100 8 4 4 0 000-8z"/>
+                </svg>
+                
+                <svg class="block dark:hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" clip-rule="evenodd"/>
+                </svg>
+            </button>
+            </div>
                 <?php if(auth()->guard()->check()): ?>
                     <?php if (isset($component)) { $__componentOriginaldf8083d4a852c446488d8d384bbc7cbe = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginaldf8083d4a852c446488d8d384bbc7cbe = $attributes; } ?>
