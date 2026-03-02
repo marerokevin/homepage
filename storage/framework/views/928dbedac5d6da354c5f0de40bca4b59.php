@@ -252,7 +252,7 @@
 
         <!-- Nested dropdown - Printing and Publishing-->
         <div class="relative group">
-            <button class="w-full flex justify-between items-center px-4 py-2 text-left hover:bg-gray-100 focus:outline-none">
+            <button class="w-full flex justify-between items-center px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-900 focus:outline-none">
                 <span class="text-sm text-gray-700 dark:text-gray-300">
                     Printing and Publishing
                 </span>
@@ -262,7 +262,7 @@
             </button>
 
             <!-- Submenu -->
-            <ul class="absolute top-0 left-full ml-0 bg-white shadow-lg rounded-md w-56 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 z-50">
+            <ul class="absolute top-0 left-full ml-0 bg-white shadow-lg rounded-md w-56 opacity-0 invisible group-hover:opacity-100 dark:bg-gray-700 group-hover:visible transition-all duration-150 z-50">
                 <li>
                     <a href="/printing-and-publishing#printing-and-print-management"
                     class="block px-4 py-2 text-sm leading-5 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition duration-150 ease-in-out">
@@ -286,7 +286,7 @@
 
         <!-- Nested dropdown - Documentation -->
         <div class="relative group">
-            <button class="w-full flex justify-between items-center px-4 py-2 text-left hover:bg-gray-100 focus:outline-none">
+            <button class="w-full flex justify-between items-center px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-900 focus:outline-none">
                 <span class="text-sm text-gray-700 dark:text-gray-300">
                     Documentation
                 </span>
@@ -296,7 +296,7 @@
             </button>
 
             <!-- Submenu -->
-            <ul class="absolute top-0 left-full ml-0 bg-white shadow-lg rounded-md w-56 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 z-50">
+            <ul class="absolute top-0 left-full ml-0 bg-white shadow-lg rounded-md w-56 opacity-0 invisible group-hover:opacity-100 dark:bg-gray-700 group-hover:visible transition-all duration-150 z-50">
                 <li>
                     <a href="/documentation#document-engineering"
                     class="block px-4 py-2 text-sm leading-5 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition duration-150 ease-in-out">
@@ -332,7 +332,7 @@
 
         <!-- Nested dropdown - Marketing Communications -->
         <div class="relative group">
-            <button class="w-full flex justify-between items-center px-4 py-2 text-left hover:bg-gray-100 focus:outline-none">
+            <button class="w-full flex justify-between items-center px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-900 focus:outline-none">
                 <span class="text-sm text-gray-700 dark:text-gray-300">
                     Marketing Communications
                 </span>
@@ -342,7 +342,7 @@
             </button>
 
             <!-- Submenu -->
-            <ul class="absolute top-0 left-full ml-0 bg-white shadow-lg rounded-md w-56 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 z-50">
+            <ul class="absolute top-0 left-full ml-0 bg-white shadow-lg rounded-md w-56 opacity-0 invisible group-hover:opacity-100 group-hover:visible dark:bg-gray-700 transition-all duration-150 z-50">
                 <li>
                     <a href="/marketing-communications#video-design-and-production"
                     class="block px-4 py-2 text-sm leading-5 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition duration-150 ease-in-out">
@@ -379,7 +379,7 @@
 
         <!-- Nested dropdown - Technology -->
         <div class="relative group">
-            <button class="w-full flex justify-between items-center px-4 py-2 text-left hover:bg-gray-100 focus:outline-none">
+            <button class="w-full flex justify-between items-center px-4 py-2 text-left hover:bg-gray-100dark:hover:bg-gray-900 ocus:outline-none">
                 <span class="text-sm text-gray-700 dark:text-gray-300">
                     Technology
                 </span>
@@ -389,7 +389,7 @@
             </button>
 
             <!-- Submenu -->
-            <ul class="absolute top-0 left-full ml-0 bg-white shadow-lg rounded-md w-56 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 z-50">
+            <ul class="absolute top-0 left-full ml-0 bg-white shadow-lg rounded-md w-56 opacity-0 invisible group-hover:opacity-100 group-hover:visible dark:bg-gray-700 transition-all duration-150 z-50">
                 <li>
                     <a href="/technology#content-management"
                     class="block px-4 py-2 text-sm leading-5 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition duration-150 ease-in-out">
@@ -608,6 +608,7 @@
                         </svg>
                     </button>
                  <?php $__env->endSlot(); ?>
+
                  <?php $__env->slot('content', null, ['class' => 'overflow-visible']); ?> 
                     <?php if (isset($component)) { $__componentOriginal68cb1971a2b92c9735f83359058f7108 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginal68cb1971a2b92c9735f83359058f7108 = $attributes; } ?>
@@ -620,6 +621,28 @@
 <?php endif; ?>
 <?php $component->withAttributes(['href' => '/contact-us#management-team']); ?>
                         <?php echo e(__('Management Team')); ?>
+
+                     <?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal68cb1971a2b92c9735f83359058f7108)): ?>
+<?php $attributes = $__attributesOriginal68cb1971a2b92c9735f83359058f7108; ?>
+<?php unset($__attributesOriginal68cb1971a2b92c9735f83359058f7108); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal68cb1971a2b92c9735f83359058f7108)): ?>
+<?php $component = $__componentOriginal68cb1971a2b92c9735f83359058f7108; ?>
+<?php unset($__componentOriginal68cb1971a2b92c9735f83359058f7108); ?>
+<?php endif; ?>
+                    <?php if (isset($component)) { $__componentOriginal68cb1971a2b92c9735f83359058f7108 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal68cb1971a2b92c9735f83359058f7108 = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.dropdown-link','data' => ['href' => '/contact-us#contact-form']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('dropdown-link'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['href' => '/contact-us#contact-form']); ?>
+                        <?php echo e(__('Contact Form')); ?>
 
                      <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>

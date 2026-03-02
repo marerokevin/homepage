@@ -74,7 +74,7 @@
 
         <!-- Nested dropdown - Printing and Publishing-->
         <div class="relative group">
-            <button class="w-full flex justify-between items-center px-4 py-2 text-left hover:bg-gray-100 focus:outline-none">
+            <button class="w-full flex justify-between items-center px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-900 focus:outline-none">
                 <span class="text-sm text-gray-700 dark:text-gray-300">
                     Printing and Publishing
                 </span>
@@ -84,7 +84,7 @@
             </button>
 
             <!-- Submenu -->
-            <ul class="absolute top-0 left-full ml-0 bg-white shadow-lg rounded-md w-56 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 z-50">
+            <ul class="absolute top-0 left-full ml-0 bg-white shadow-lg rounded-md w-56 opacity-0 invisible group-hover:opacity-100 dark:bg-gray-700 group-hover:visible transition-all duration-150 z-50">
                 <li>
                     <a href="/printing-and-publishing#printing-and-print-management"
                     class="block px-4 py-2 text-sm leading-5 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition duration-150 ease-in-out">
@@ -108,7 +108,7 @@
 
         <!-- Nested dropdown - Documentation -->
         <div class="relative group">
-            <button class="w-full flex justify-between items-center px-4 py-2 text-left hover:bg-gray-100 focus:outline-none">
+            <button class="w-full flex justify-between items-center px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-900 focus:outline-none">
                 <span class="text-sm text-gray-700 dark:text-gray-300">
                     Documentation
                 </span>
@@ -118,7 +118,7 @@
             </button>
 
             <!-- Submenu -->
-            <ul class="absolute top-0 left-full ml-0 bg-white shadow-lg rounded-md w-56 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 z-50">
+            <ul class="absolute top-0 left-full ml-0 bg-white shadow-lg rounded-md w-56 opacity-0 invisible group-hover:opacity-100 dark:bg-gray-700 group-hover:visible transition-all duration-150 z-50">
                 <li>
                     <a href="/documentation#document-engineering"
                     class="block px-4 py-2 text-sm leading-5 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition duration-150 ease-in-out">
@@ -154,7 +154,7 @@
 
         <!-- Nested dropdown - Marketing Communications -->
         <div class="relative group">
-            <button class="w-full flex justify-between items-center px-4 py-2 text-left hover:bg-gray-100 focus:outline-none">
+            <button class="w-full flex justify-between items-center px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-900 focus:outline-none">
                 <span class="text-sm text-gray-700 dark:text-gray-300">
                     Marketing Communications
                 </span>
@@ -164,7 +164,7 @@
             </button>
 
             <!-- Submenu -->
-            <ul class="absolute top-0 left-full ml-0 bg-white shadow-lg rounded-md w-56 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 z-50">
+            <ul class="absolute top-0 left-full ml-0 bg-white shadow-lg rounded-md w-56 opacity-0 invisible group-hover:opacity-100 group-hover:visible dark:bg-gray-700 transition-all duration-150 z-50">
                 <li>
                     <a href="/marketing-communications#video-design-and-production"
                     class="block px-4 py-2 text-sm leading-5 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition duration-150 ease-in-out">
@@ -201,7 +201,7 @@
 
         <!-- Nested dropdown - Technology -->
         <div class="relative group">
-            <button class="w-full flex justify-between items-center px-4 py-2 text-left hover:bg-gray-100 focus:outline-none">
+            <button class="w-full flex justify-between items-center px-4 py-2 text-left hover:bg-gray-100dark:hover:bg-gray-900 ocus:outline-none">
                 <span class="text-sm text-gray-700 dark:text-gray-300">
                     Technology
                 </span>
@@ -211,7 +211,7 @@
             </button>
 
             <!-- Submenu -->
-            <ul class="absolute top-0 left-full ml-0 bg-white shadow-lg rounded-md w-56 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 z-50">
+            <ul class="absolute top-0 left-full ml-0 bg-white shadow-lg rounded-md w-56 opacity-0 invisible group-hover:opacity-100 group-hover:visible dark:bg-gray-700 transition-all duration-150 z-50">
                 <li>
                     <a href="/technology#content-management"
                     class="block px-4 py-2 text-sm leading-5 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition duration-150 ease-in-out">
@@ -300,9 +300,13 @@
                         </svg>
                     </button>
                 </x-slot>
+
                 <x-slot name="content" class="overflow-visible">
                     <x-dropdown-link href="/contact-us#management-team">
                         {{ __('Management Team') }}
+                    </x-dropdown-link>
+                    <x-dropdown-link href="/contact-us#contact-form">
+                        {{ __('Contact Form') }}
                     </x-dropdown-link>
                     <x-dropdown-link href="/contact-us#local-offices">
                         {{ __('Offices') }}

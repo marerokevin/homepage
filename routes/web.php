@@ -21,6 +21,8 @@ Route::view('/services', 'services')->name('services');
 Route::post('/contact-us', [ContactController::class, 'submit'])
     ->name('contact.submit');
 
+// Calendar for Car Schedule
+Route::view('/calendar', 'calendar')->middleware('auth');
 
 // --- THE FIX: Blog & Updates ---
 // This handles the list AND the single post view via the slug.

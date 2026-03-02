@@ -2,10 +2,10 @@
 
 namespace App\Mail;
 
-use App\Models\Contact;
+use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Bus\Queueable;
+use App\Models\Contact;
 
 class ContactNotification extends Mailable
 {
@@ -13,18 +13,15 @@ class ContactNotification extends Mailable
 
     public $contact;
 
-    public function __construct(Contact $contact)
+    public function __construct(Contact $contact)  // <-- was missing $contact parameter
     {
         $this->contact = $contact;
     }
 
     public function build()
     {
-        return $this->subject('New Contact Message: ' . $this->contact->subject)
-                    ->view('emails.contact-notification')
-                    ->with([
-                        'contact' => $this->contact
-                    ]);
+        return $this->replyTo($this->contact->email, $this->contact->name)
+                    ->subject('New Contact Message: ' . $this->contact->subject)
+                    ->view('emails.contact-notification');
     }
 }
-

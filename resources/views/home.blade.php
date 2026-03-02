@@ -5,11 +5,11 @@
 @section('content')
 <!-- Hero Section -->
 <section class="pt-2 pb-2 bg-gradient-to-r from-blue-700 to-blue-500 text-white text-left grid grid-cols-1 md:grid-cols-3">
-    <div class="max-w-full mx-auto px-4 pr-2">
+    <div class="max-w-full mx-auto px-4 pl-14">
         <h1 class="text-5xl font-bold mb-6">a Global Documentation, Localization & Packaging Solutions</h1>
             <p class="text-xl mb-8 opacity-90">In a rapidly globalizing world, we turn innovation into practical solutions for our customers. Supported by research and green technology, we ensure value and reliability.</p>
             <button class="text-gray-hover:text-red-600 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
-                <a href="#" class="px-8 bg-blue-600 flex items-center text-white font-semibold rounded-lg shadow hover:bg-blue-300 hover:text-blue-700 transition">Contact Us
+                <a href="/contact-us#contact-form" class="px-8 bg-blue-600 flex items-center text-white font-semibold rounded-lg shadow hover:bg-blue-300 hover:text-blue-700 transition">Contact Us
                     <img src="{{ asset('images/Contact Us-pixel.png') }}" class="h-14"
                                             alt="kitting"
                                             loading="lazy">
@@ -18,7 +18,7 @@
     </div>
     <div class="max-w-full mx-auto px-4"></div>
     <div class="max-w-full mx-auto pt-72">
-        <a href="#" class="px-8 py-4 bg-white text-blue-700 font-semibold rounded-lg shadow hover:bg-gray-300 hover:text-blue-900 transition">Learn More</a>
+        <a href="/company-profile#about-us" class="px-8 py-4 bg-white text-blue-700 font-semibold rounded-lg shadow hover:bg-gray-300 hover:text-blue-900 transition">Learn More</a>
     </div>
 
 </section>
@@ -34,10 +34,10 @@
                                             alt=""
                                             loading="lazy">
                 </h3>
-                <p class="text-gray-700">We provide printed materials for any type of product. By leveraging our extensive network of regional print partners, we cut delivery times and reduce costs—giving us a clear competitive edge and ensuring faster, more efficient service for our customers.</p><br/>
-                <p class="text-left">• Offset, Flexo-graphic and silk-screen printing</p>
-                <p class="text-left">• Document printing, binding and finishing</p>
-                <p class="text-left">• Label printing</p>
+                <p class="text-left dark:text-gray-50">We provide printed materials for any type of product. By leveraging our extensive network of regional print partners, we cut delivery times and reduce costs—giving us a clear competitive edge and ensuring faster, more efficient service for our customers.</p></br>
+                <p class="text-left dark:text-gray-50">• Offset, Flexo-graphic and silk-screen printing</p>
+                <p class="text-left dark:text-gray-50">• Document printing, binding and finishing</p>
+                <p class="text-left dark:text-gray-50">• Label printing</p>
             </div>
             <div class="bg-white p-8 shadow rounded-xl dark:bg-blue-950">
                 <h3 class="text-2xl h-12 font-semibold py-4 flex items-center justify-start">Packaging
@@ -45,7 +45,7 @@
                                             alt="packaging"
                                             loading="lazy">
                 </h3>
-                <p class="text-gray-700">Our team of specialists design and develop any type of packaging for all industries. We can help you engineer and deliver at the shortest time with our "best and unbeatable price." Plus, we effectively manage our logistics to deliver these to you – anytime and whenever you need it.</p>
+                <p class="text-gray-700 dark:text-gray-50">Our team of specialists design and develop any type of packaging for all industries. We can help you engineer and deliver at the shortest time with our "best and unbeatable price." Plus, we effectively manage our logistics to deliver these to you – anytime and whenever you need it.</p>
             </div>
             <div class="bg-white p-8 shadow rounded-xl dark:bg-blue-950">
                 <h3 class="text-2xl font-semibold py-4 h-12 flex items-center justify-start">Kitting
@@ -53,7 +53,7 @@
                                             alt="kitting"
                                             loading="lazy">
                 </h3>
-                <p class="text-gray-700">As a part of our full documentation engineering, fulfillment, and delivery solution, as needed. Our kitting operations scale easily and leverage solid inventory management, strict quality control, and reliable just-in-time delivery. With a global network of specialists, we evaluate your requirements and build a kitting program that fits them, wherever you and your customers are.</p>
+                <p class="text-gray-700 dark:text-gray-50">As a part of our full documentation engineering, fulfillment, and delivery solution, as needed. Our kitting operations scale easily and leverage solid inventory management, strict quality control, and reliable just-in-time delivery. With a global network of specialists, we evaluate your requirements and build a kitting program that fits them, wherever you and your customers are.</p>
             </div>
         </div>
     </div>

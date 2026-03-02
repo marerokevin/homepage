@@ -5,6 +5,11 @@
         </h2>
     </x-slot>
 
+    <div class="py-20 grid grid-cols-4 md:grid-cols-4>
+        <div class="border-red-200">
+            Sidebar
+        </div>
+    </div>
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">

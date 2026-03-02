@@ -16,6 +16,10 @@
                 Have questions, suggestions, or partnership inquiries?
                 Send us a message and we’ll get back to you as soon as possible.
             </p>
+            <!-- RIGHT SIDE (FORM) -->
+            <h2 class="text-3xl font-extrabold text-gray-900 dark:text-white mb-8 text-left">
+               Management Team
+            </h2>
 
             <!-- President -->
             <div class="py-9 space-y-0 text-sm text-gray-600 dark:text-gray-400">
@@ -133,6 +137,10 @@
                 </div>
             </div>
         </div>
+</section>
+
+    <!-- OUR OFFICE -->
+    <section id="contact-form" class="max-w-6xl mx-auto px-6 py-16">
         <!-- RIGHT SIDE (FORM) -->
         <h2 class="text-3xl font-extrabold text-gray-900 dark:text-white mb-8 text-left">
             Contact Form
@@ -218,10 +226,8 @@
         </h2>
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
-
             <!-- Office Details -->
             <div class="space-y-6 text-gray-600 dark:text-gray-400">
-
                 <div>
                     <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">
                         Crestec Philippines, Inc.
@@ -234,7 +240,6 @@
                         Batangas, Philippines
                     </p>
                 </div>
-
                 <div>
                     <p>
                         <span class="font-semibold text-gray-900 dark:text-white">Phone:</span>
@@ -242,18 +247,16 @@
                     </p>
                     <p>
                         <span class="font-semibold text-gray-900 dark:text-white">Email:</span>
-                        noreply@crestecphil.com.ph
+                        sales@crestecphil.com.ph
                     </p>
                 </div>
-
                 <div>
                     <p>
                         <span class="font-semibold text-gray-900 dark:text-white">Office Hours:</span><br>
-                        Monday – Friday<br>
+                        Monday – Saturday<br>
                         8:00 AM – 5:00 PM
                     </p>
                 </div>
-
             </div>
 
             <!-- Google Map Embed -->
