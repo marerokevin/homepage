@@ -5,10 +5,10 @@
 @section('content')
 
 <div class="min-h-screen bg-stone-100 dark:bg-gray-950 py-10 px-4">
-    <div class="max-w-4xl mx-auto">
+    <div class="w-full">
 
         {{-- Header --}}
-        <div class="flex items-center justify-between mb-8">
+        <div class="flex items-center justify-between mb-2">
             <h1 class="text-4xl font-bold text-gray-900 dark:text-gray-100 tracking-tight">Driver Allocation</h1>
             <button onclick="goToday()"
                 class="px-4 py-1.5 text-sm font-semibold border border-stone-300 dark:border-gray-700 rounded-full text-stone-600 dark:text-gray-400 hover:bg-gray-900 hover:text-white dark:hover:bg-gray-100 dark:hover:text-gray-900 transition-all duration-200">
@@ -17,7 +17,7 @@
         </div>
 
         {{-- Month Navigation --}}
-        <div class="flex items-center justify-center gap-6 mb-6">
+        <div class="flex items-center justify-center gap-6 mb-2">
             <button onclick="changeMonth(-1)"
                 class="w-10 h-10 rounded-full border-2 border-stone-300 dark:border-gray-700 flex items-center justify-center text-stone-600 dark:text-gray-400 hover:bg-gray-900 hover:text-white hover:border-gray-900 dark:hover:bg-gray-100 dark:hover:text-gray-900 transition-all duration-200">
                 &#8592;
@@ -30,7 +30,7 @@
         </div>
 
         {{-- Calendar --}}
-        <div class="rounded-2xl overflow-hidden shadow-lg border border-stone-200 dark:border-gray-800">
+        <div class="rounded-2xl w-full overflow-hidden shadow-lg border border-stone-200 dark:border-gray-800">
 
             {{-- Day names --}}
             <div class="bg-gray-900 dark:bg-gray-950" style="display:grid; grid-template-columns:repeat(7,minmax(0,1fr))">
@@ -146,7 +146,7 @@
         const cell = document.createElement('div');
         const isSunday = colIdx === 0;
 
-        let cellClass = 'border-gray-700 transition-colors duration-150 ' + 'h-40 ';
+        let cellClass = 'border-gray-700 transition-colors duration-150 ' + 'h-32 ';
         if (otherMonth)   cellClass += 'bg-stone-50 dark:bg-gray-900 ';
         else if (isToday) cellClass += 'bg-amber-50 dark:bg-gray-800 cursor-pointer hover:bg-amber-100 dark:hover:bg-gray-700 ';
         else              cellClass += 'bg-white dark:bg-gray-900 cursor-pointer hover:bg-stone-50 dark:hover:bg-gray-800 ';
