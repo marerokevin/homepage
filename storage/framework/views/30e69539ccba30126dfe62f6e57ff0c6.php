@@ -3,11 +3,11 @@
 <?php $__env->startSection('content'); ?>
 
 <div class="min-h-screen bg-stone-100 dark:bg-gray-950 py-10 px-4">
-    <div class="w-full">
+    <div class="max-w-4xl mx-auto">
 
         
-        <div class="flex items-center justify-between mb-2">
-            <h1 class="text-4xl font-bold text-gray-900 dark:text-gray-100 tracking-tight">Driver Allocation</h1>
+        <div class="flex items-center justify-between mb-8">
+            <h1 class="text-4xl font-bold text-gray-900 dark:text-gray-100 tracking-tight">Calendar</h1>
             <button onclick="goToday()"
                 class="px-4 py-1.5 text-sm font-semibold border border-stone-300 dark:border-gray-700 rounded-full text-stone-600 dark:text-gray-400 hover:bg-gray-900 hover:text-white dark:hover:bg-gray-100 dark:hover:text-gray-900 transition-all duration-200">
                 Today
@@ -15,7 +15,7 @@
         </div>
 
         
-        <div class="flex items-center justify-center gap-6 mb-2">
+        <div class="flex items-center justify-center gap-6 mb-6">
             <button onclick="changeMonth(-1)"
                 class="w-10 h-10 rounded-full border-2 border-stone-300 dark:border-gray-700 flex items-center justify-center text-stone-600 dark:text-gray-400 hover:bg-gray-900 hover:text-white hover:border-gray-900 dark:hover:bg-gray-100 dark:hover:text-gray-900 transition-all duration-200">
                 &#8592;
@@ -28,7 +28,7 @@
         </div>
 
         
-        <div class="rounded-2xl w-full overflow-hidden shadow-lg border border-stone-200 dark:border-gray-800">
+        <div class="rounded-2xl overflow-hidden shadow-lg border border-stone-200 dark:border-gray-800">
 
             
             <div class="bg-gray-900 dark:bg-gray-950" style="display:grid; grid-template-columns:repeat(7,minmax(0,1fr))">
@@ -48,40 +48,87 @@
 </div>
 
 
-<div id="eventModal"
-    class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center px-4">
-    <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-md p-6">
-
-        <h2 id="modalDateTitle" class="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4"></h2>
+<div id="eventModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center px-4 py-6">
+    <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-xl flex flex-col" style="max-height:90vh;">
 
         
-        <div id="eventList" class="mb-3 max-h-36 overflow-y-auto space-y-2"></div>
-
-        
-        <input type="text" id="eventInput" maxlength="50" placeholder="Add an event..."
-            class="w-full px-4 py-2.5 rounded-xl border border-stone-300 dark:border-gray-700 bg-stone-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-100 mb-3 placeholder-stone-400" />
-
-        
-        <div class="flex gap-3 mb-4">
-            <button onclick="selectColor(1)" data-color="1"
-                class="color-dot w-6 h-6 rounded-full bg-blue-400 transition-transform hover:scale-125 ring-2 ring-blue-400 ring-offset-2"></button>
-            <button onclick="selectColor(2)" data-color="2"
-                class="color-dot w-6 h-6 rounded-full bg-green-400 transition-transform hover:scale-125"></button>
-            <button onclick="selectColor(3)" data-color="3"
-                class="color-dot w-6 h-6 rounded-full bg-amber-400 transition-transform hover:scale-125"></button>
-            <button onclick="selectColor(4)" data-color="4"
-                class="color-dot w-6 h-6 rounded-full bg-pink-400 transition-transform hover:scale-125"></button>
+        <div class="flex items-center justify-between px-6 pt-6 pb-4 border-b border-stone-200 dark:border-gray-700 shrink-0">
+            <div>
+                <h2 id="modalDateTitle" class="text-xl font-bold text-gray-900 dark:text-gray-100"></h2>
+                <p class="text-xs text-stone-400 dark:text-gray-500 mt-0.5">Trip / Vehicle Request</p>
+            </div>
+            <button onclick="closeModal()" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-stone-100 dark:hover:bg-gray-800 text-stone-400 hover:text-stone-700 dark:hover:text-gray-200 transition text-lg">&times;</button>
         </div>
 
         
-        <div class="flex gap-3">
-            <button onclick="saveEvent()"
+        <div class="overflow-y-auto px-6 py-4 space-y-5 flex-1">
+
+            
+            <div id="tripList" class="space-y-2"></div>
+
+            
+            <div class="border-t border-stone-200 dark:border-gray-700 pt-4">
+                <p class="text-xs font-semibold uppercase tracking-widest text-stone-400 dark:text-gray-500 mb-4">New Trip Request</p>
+            </div>
+
+            
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">📍 Place of Pickup</label>
+                <input type="text" id="tripPickup" value="Crestec Philippines, Inc., Lima Technology Center, Lipa City, Batangas"
+                    class="w-full px-3 py-2 rounded-xl border border-stone-300 dark:border-gray-700 bg-stone-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-100" />
+            </div>
+
+            
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">🏁 Destination</label>
+                <input type="text" id="tripDestination" placeholder="Enter destination address..."
+                    class="w-full px-3 py-2 rounded-xl border border-stone-300 dark:border-gray-700 bg-stone-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-100" />
+            </div>
+
+            
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">🚗 Vehicle Make / Model</label>
+                    <input type="text" id="tripVehicle" placeholder="e.g. Toyota Innova"
+                        class="w-full px-3 py-2 rounded-xl border border-stone-300 dark:border-gray-700 bg-stone-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-100" />
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">🔢 Plate Number</label>
+                    <input type="text" id="tripPlate" placeholder="e.g. ABC 1234"
+                        class="w-full px-3 py-2 rounded-xl border border-stone-300 dark:border-gray-700 bg-stone-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-100" />
+                </div>
+            </div>
+
+            
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:1rem;">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">🕐 Departure</label>
+                    <input type="time" id="tripDeparture"
+                        class="w-full px-3 py-2 rounded-xl border border-stone-300 dark:border-gray-700 bg-stone-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-100" />
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">📥 ETA</label>
+                    <input type="time" id="tripETA"
+                        class="w-full px-3 py-2 rounded-xl border border-stone-300 dark:border-gray-700 bg-stone-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-100" />
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">🔁 Est. Return</label>
+                    <input type="time" id="tripReturn"
+                        class="w-full px-3 py-2 rounded-xl border border-stone-300 dark:border-gray-700 bg-stone-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-100" />
+                </div>
+            </div>
+
+        </div>
+
+        
+        <div class="flex gap-3 px-6 py-4 border-t border-stone-200 dark:border-gray-700 shrink-0">
+            <button onclick="saveTrip()"
                 class="flex-1 py-2.5 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 font-semibold rounded-xl hover:opacity-80 transition text-sm">
-                Add Event
+                Save Trip Request
             </button>
             <button onclick="closeModal()"
                 class="px-5 py-2.5 border border-stone-300 dark:border-gray-700 text-stone-600 dark:text-gray-400 font-medium rounded-xl hover:bg-stone-100 dark:hover:bg-gray-800 transition text-sm">
-                Close
+                Cancel
             </button>
         </div>
     </div>
@@ -91,22 +138,16 @@
     const MONTHS = ['January','February','March','April','May','June',
                     'July','August','September','October','November','December'];
 
-    const COLOR_CLASSES = {
-        1: { bg: 'bg-blue-100',  text: 'text-blue-700',  ring: 'ring-blue-400'  },
-        2: { bg: 'bg-green-100', text: 'text-green-700', ring: 'ring-green-400' },
-        3: { bg: 'bg-amber-100', text: 'text-amber-700', ring: 'ring-amber-400' },
-        4: { bg: 'bg-pink-100',  text: 'text-pink-700',  ring: 'ring-pink-400'  },
-    };
-
     let currentDate  = new Date();
     let currentYear  = currentDate.getFullYear();
     let currentMonth = currentDate.getMonth();
     let selectedDateKey = null;
-    let selectedColor   = 1;
-    let events = JSON.parse(localStorage.getItem('cal_events') || '{}');
+    let trips = JSON.parse(localStorage.getItem('cal_trips') || '{}');
 
-    function saveEvents() {
-        localStorage.setItem('cal_events', JSON.stringify(events));
+    const DEFAULT_PICKUP = 'Crestec Philippines, Inc., Lima Technology Center, Lipa City, Batangas';
+
+    function saveTrips() {
+        localStorage.setItem('cal_trips', JSON.stringify(trips));
     }
 
     function dateKey(year, month, day) {
@@ -115,7 +156,6 @@
 
     function renderCalendar() {
         document.getElementById('monthLabel').textContent = `${MONTHS[currentMonth]} ${currentYear}`;
-
         const grid = document.getElementById('calGrid');
         grid.innerHTML = '';
 
@@ -126,15 +166,12 @@
         const isSameMonth = today.getFullYear() === currentYear && today.getMonth() === currentMonth;
 
         let colIndex = 0;
-
         for (let i = firstDay - 1; i >= 0; i--) {
             grid.appendChild(createCell(daysInPrev - i, true, false, currentYear, currentMonth - 1, daysInPrev - i, colIndex++ % 7));
         }
-
         for (let d = 1; d <= daysInMonth; d++) {
             grid.appendChild(createCell(d, false, isSameMonth && d === today.getDate(), currentYear, currentMonth, d, colIndex++ % 7));
         }
-
         const remaining = (7 - (grid.children.length % 7)) % 7;
         for (let d = 1; d <= remaining; d++) {
             grid.appendChild(createCell(d, true, false, currentYear, currentMonth + 1, d, colIndex++ % 7));
@@ -145,41 +182,34 @@
         const cell = document.createElement('div');
         const isSunday = colIdx === 0;
 
-        let cellClass = 'border-gray-700 transition-colors duration-150 ' + 'h-32 ';
+        let cellClass = 'p-2 transition-colors duration-150 h-32 ';
         if (otherMonth)   cellClass += 'bg-stone-50 dark:bg-gray-900 ';
         else if (isToday) cellClass += 'bg-amber-50 dark:bg-gray-800 cursor-pointer hover:bg-amber-100 dark:hover:bg-gray-700 ';
         else              cellClass += 'bg-white dark:bg-gray-900 cursor-pointer hover:bg-stone-50 dark:hover:bg-gray-800 ';
-
         cell.className = cellClass;
 
-        // Date number
         const num = document.createElement('div');
-        let numClass = 'w-7 h-full flex items-center justify-center text-sm bg-gray-200 font-medium mb-1 ';
-
-        if (isToday)         numClass += 'bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 font-bold';
-        else if (otherMonth) numClass += isSunday ? 'text-red-300 dark:text-red-900' : 'text-stone-300 dark:text-gray-700';
-        else if (isSunday)   numClass += 'text-red-500 dark:text-red-400 font-semibold';
-        else                 numClass += 'text-gray-700 dark:text-gray-300';
-
+        let numClass = 'w-7 h-7 flex items-center justify-center rounded-full text-sm font-medium mb-1 ';
+        if (isToday)           numClass += 'bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 font-bold';
+        else if (otherMonth)   numClass += isSunday ? 'text-red-300 dark:text-red-900' : 'text-stone-300 dark:text-gray-700';
+        else if (isSunday)     numClass += 'text-red-500 dark:text-red-400 font-semibold';
+        else                   numClass += 'text-gray-700 dark:text-gray-300';
         num.className = numClass;
         num.textContent = day;
         cell.appendChild(num);
 
-        // Events
         const key = dateKey(year, month, d);
-        if (events[key]) {
-            events[key].slice(0, 2).forEach(ev => {
-                const c = COLOR_CLASSES[ev.color] || COLOR_CLASSES[1];
+        if (trips[key]) {
+            trips[key].slice(0, 2).forEach(trip => {
                 const tag = document.createElement('div');
-                tag.className = `text-xs px-1.5 py-0.5 rounded font-medium truncate mb-0.5 ${c.bg} ${c.text}`;
-                tag.textContent = ev.text;
+                tag.className = 'text-xs px-1.5 py-0.5 rounded font-medium truncate mb-0.5 bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300';
+                tag.textContent = `🚗 ${trip.destination || 'Trip'}`;
                 cell.appendChild(tag);
             });
-
-            if (events[key].length > 2) {
+            if (trips[key].length > 2) {
                 const more = document.createElement('div');
                 more.className = 'text-xs text-stone-400 dark:text-gray-600 px-1';
-                more.textContent = `+${events[key].length - 2} more`;
+                more.textContent = `+${trips[key].length - 2} more`;
                 cell.appendChild(more);
             }
         }
@@ -187,17 +217,21 @@
         if (!otherMonth) {
             cell.addEventListener('click', () => openModal(year, month, d));
         }
-
         return cell;
     }
 
     function openModal(year, month, day) {
         selectedDateKey = dateKey(year, month, day);
         document.getElementById('modalDateTitle').textContent = `${MONTHS[month]} ${day}, ${year}`;
-        document.getElementById('eventInput').value = '';
-        renderEventList();
+        document.getElementById('tripPickup').value      = DEFAULT_PICKUP;
+        document.getElementById('tripDestination').value = '';
+        document.getElementById('tripVehicle').value     = '';
+        document.getElementById('tripPlate').value       = '';
+        document.getElementById('tripDeparture').value   = '';
+        document.getElementById('tripETA').value         = '';
+        document.getElementById('tripReturn').value      = '';
+        renderTripList();
         document.getElementById('eventModal').classList.remove('hidden');
-        setTimeout(() => document.getElementById('eventInput').focus(), 50);
     }
 
     function closeModal() {
@@ -205,47 +239,71 @@
         selectedDateKey = null;
     }
 
-    function renderEventList() {
-        const list = document.getElementById('eventList');
+    function renderTripList() {
+        const list = document.getElementById('tripList');
         list.innerHTML = '';
-        (events[selectedDateKey] || []).forEach((ev, i) => {
-            const c = COLOR_CLASSES[ev.color] || COLOR_CLASSES[1];
-            const item = document.createElement('div');
-            item.className = `flex items-center justify-between px-3 py-1.5 rounded-lg text-sm font-medium ${c.bg} ${c.text}`;
-            item.innerHTML = `
-                <span class="truncate">${ev.text}</span>
-                <button onclick="deleteEvent(${i})" class="ml-2 opacity-50 hover:opacity-100 transition text-xs font-bold">✕</button>
+        const dayTrips = trips[selectedDateKey] || [];
+        if (dayTrips.length === 0) return;
+
+        const heading = document.createElement('p');
+        heading.className = 'text-xs font-semibold uppercase tracking-widest text-stone-400 dark:text-gray-500 mb-2';
+        heading.textContent = 'Scheduled Trips';
+        list.appendChild(heading);
+
+        dayTrips.forEach((trip, i) => {
+            const card = document.createElement('div');
+            card.className = 'rounded-xl border border-stone-200 dark:border-gray-700 p-3 text-sm bg-stone-50 dark:bg-gray-800 space-y-1';
+            card.innerHTML = `
+                <div class="flex justify-between items-start">
+                    <div class="font-semibold text-gray-800 dark:text-gray-100">🚗 ${trip.vehicle} <span class="text-xs font-normal text-stone-400">${trip.plate}</span></div>
+                    <button onclick="deleteTrip(${i})" class="text-xs text-stone-300 hover:text-red-500 transition font-bold ml-2">✕</button>
+                </div>
+                <div class="text-stone-500 dark:text-gray-400 text-xs">📍 ${trip.pickup}</div>
+                <div class="text-stone-500 dark:text-gray-400 text-xs">🏁 ${trip.destination}</div>
+                <div class="flex gap-4 text-xs text-stone-400 dark:text-gray-500 pt-1">
+                    <span>🕐 Dep: <strong>${trip.departure}</strong></span>
+                    <span>📥 ETA: <strong>${trip.eta}</strong></span>
+                    <span>🔁 Return: <strong>${trip.returnTime}</strong></span>
+                </div>
             `;
-            list.appendChild(item);
+            list.appendChild(card);
         });
     }
 
-    function saveEvent() {
-        const text = document.getElementById('eventInput').value.trim();
-        if (!text) return;
-        if (!events[selectedDateKey]) events[selectedDateKey] = [];
-        events[selectedDateKey].push({ text, color: selectedColor });
-        saveEvents();
+    function saveTrip() {
+        const pickup      = document.getElementById('tripPickup').value.trim();
+        const destination = document.getElementById('tripDestination').value.trim();
+        const vehicle     = document.getElementById('tripVehicle').value.trim();
+        const plate       = document.getElementById('tripPlate').value.trim();
+        const departure   = document.getElementById('tripDeparture').value;
+        const eta         = document.getElementById('tripETA').value;
+        const returnTime  = document.getElementById('tripReturn').value;
+
+        if (!destination || !vehicle || !plate || !departure) {
+            alert('Please fill in: Destination, Vehicle, Plate Number, and Departure time.');
+            return;
+        }
+
+        if (!trips[selectedDateKey]) trips[selectedDateKey] = [];
+        trips[selectedDateKey].push({ pickup, destination, vehicle, plate, departure, eta, returnTime });
+        saveTrips();
         renderCalendar();
-        renderEventList();
-        document.getElementById('eventInput').value = '';
+        renderTripList();
+
+        document.getElementById('tripDestination').value = '';
+        document.getElementById('tripVehicle').value     = '';
+        document.getElementById('tripPlate').value       = '';
+        document.getElementById('tripDeparture').value   = '';
+        document.getElementById('tripETA').value         = '';
+        document.getElementById('tripReturn').value      = '';
     }
 
-    function deleteEvent(index) {
-        events[selectedDateKey].splice(index, 1);
-        if (!events[selectedDateKey].length) delete events[selectedDateKey];
-        saveEvents();
+    function deleteTrip(index) {
+        trips[selectedDateKey].splice(index, 1);
+        if (!trips[selectedDateKey].length) delete trips[selectedDateKey];
+        saveTrips();
         renderCalendar();
-        renderEventList();
-    }
-
-    function selectColor(c) {
-        selectedColor = c;
-        document.querySelectorAll('.color-dot').forEach(d => {
-            d.classList.remove('ring-2', 'ring-blue-400', 'ring-green-400', 'ring-amber-400', 'ring-pink-400', 'ring-offset-2');
-        });
-        const btn = document.querySelector(`.color-dot[data-color="${c}"]`);
-        btn.classList.add('ring-2', COLOR_CLASSES[c].ring, 'ring-offset-2');
+        renderTripList();
     }
 
     function changeMonth(dir) {
@@ -263,10 +321,6 @@
 
     document.getElementById('eventModal').addEventListener('click', function(e) {
         if (e.target === this) closeModal();
-    });
-
-    document.getElementById('eventInput').addEventListener('keydown', e => {
-        if (e.key === 'Enter') saveEvent();
     });
 
     renderCalendar();
