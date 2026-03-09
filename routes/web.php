@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\VehicleRequestController;
 use Illuminate\Support\Facades\Route;
 
 // --- Authentication ---
@@ -35,6 +36,13 @@ Route::get('/posts', fn() => redirect()->route('updates'));
 Route::patch('/manage-posts/{post}', [PostController::class, 'update'])
     ->name('posts.update');
 
+// This is additional post
+Route::middleware('auth')->group(function () {
+    Route::view('/calendar', 'calendar');
+    Route::get('/vehicle-requests',      [VehicleRequestController::class, 'index']);
+    Route::post('/vehicle-requests',     [VehicleRequestController::class, 'store']);
+    Route::delete('/vehicle-requests/{id}', [VehicleRequestController::class, 'destroy']);
+});
 
 // --- Protected Routes ---
 Route::middleware(['auth', 'verified'])->group(function () {
