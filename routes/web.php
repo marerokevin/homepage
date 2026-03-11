@@ -5,6 +5,7 @@ use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\VehicleRequestController;
+use App\Http\Controllers\ReportController;
 use Illuminate\Support\Facades\Route;
 
 // --- Authentication ---
@@ -23,7 +24,6 @@ Route::post('/contact-us', [ContactController::class, 'submit'])
     ->name('contact.submit');
 
 // Calendar for Car Schedule
-Route::view('/calendar', 'calendar')->middleware('auth');
 
 // --- THE FIX: Blog & Updates ---
 // This handles the list AND the single post view via the slug.
@@ -36,9 +36,22 @@ Route::get('/posts', fn() => redirect()->route('updates'));
 Route::patch('/manage-posts/{post}', [PostController::class, 'update'])
     ->name('posts.update');
 
+Route::middleware('auth')->group(function () {
+
+    // Vehicle requests API
+    Route::get('/vehicle-requests',          [VehicleRequestController::class, 'index']);
+    Route::post('/vehicle-requests',         [VehicleRequestController::class, 'store']);
+    Route::delete('/vehicle-requests/{id}',  [VehicleRequestController::class, 'destroy']);
+
+    // Reports (admin only — enforced in ReportController constructor)
+    Route::get('/reports/vehicle',            [ReportController::class, 'index'])->name('reports.vehicle');
+    Route::get('/reports/vehicle/export/pdf', [ReportController::class, 'exportPdf'])->name('reports.vehicle.pdf');
+    Route::get('/reports/vehicle/export/csv', [ReportController::class, 'exportCsv'])->name('reports.vehicle.csv');
+
+});
+
 // This is additional post
 Route::middleware('auth')->group(function () {
-    Route::view('/calendar', 'calendar');
     Route::get('/vehicle-requests',      [VehicleRequestController::class, 'index']);
     Route::post('/vehicle-requests',     [VehicleRequestController::class, 'store']);
     Route::delete('/vehicle-requests/{id}', [VehicleRequestController::class, 'destroy']);
@@ -47,6 +60,10 @@ Route::middleware('auth')->group(function () {
 // --- Protected Routes ---
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', fn() => view('dashboard'))->name('dashboard');
+
+    Route::get('/calendar', function () {
+        return view('calendar');
+    })->name('calendar');
 
     // BLOG ACTIONS
     Route::post('/manage-posts', [PostController::class, 'store'])->name('posts.store');

@@ -54,20 +54,21 @@ class VehicleRequestController extends Controller
             'departure'   => 'required',
             'eta'         => 'nullable',
             'return_time' => 'nullable',
-            'return_date' => 'nullable|date',
+            'return_date' => 'nullable|sometimes|date',
         ]);
 
         $tripDate   = $validated['trip_date'];
         $departure  = $validated['departure'];
         $returnTime = $validated['return_time'] ?? null;
-        $returnDate = $validated['return_date'] ?? $tripDate;
 
-        // If return_time is set but no return_date provided,
-        // auto-detect overnight: if return time < departure time, it's next day
-        if ($returnTime && $validated['return_date'] === null) {
-            if ($returnTime < $departure) {
-                $returnDate = Carbon::parse($tripDate)->addDay()->toDateString();
-            }
+        // Always compute return_date on the server — ignore whatever client sends
+        if ($returnTime) {
+            // If return time is earlier than departure time, it's the next day (overnight)
+            $returnDate = ($returnTime < $departure)
+                ? Carbon::parse($tripDate)->addDay()->toDateString()
+                : $tripDate;
+        } else {
+            $returnDate = $tripDate;
         }
 
         // Build full datetime for overlap comparison

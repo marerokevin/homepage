@@ -10,10 +10,18 @@
         {{-- Header --}}
         <div class="flex items-center justify-between mb-8">
             <h1 class="text-4xl font-bold text-gray-900 dark:text-gray-100 tracking-tight">Calendar</h1>
-            <button onclick="goToday()"
-                class="px-4 py-1.5 text-sm font-semibold border border-stone-300 dark:border-gray-700 rounded-full text-stone-600 dark:text-gray-400 hover:bg-gray-900 hover:text-white dark:hover:bg-gray-100 dark:hover:text-gray-900 transition-all duration-200">
-                Today
-            </button>
+            <div class="flex items-center gap-3">
+                @if(Auth::user()->is_admin)
+                <a href="{{ route('reports.vehicle') }}"
+                    class="px-4 py-1.5 text-sm font-semibold border border-stone-300 dark:border-gray-700 rounded-full text-stone-600 dark:text-gray-400 hover:bg-gray-900 hover:text-white dark:hover:bg-gray-100 dark:hover:text-gray-900 transition-all duration-200">
+                    📋 Reports
+                </a>
+                @endif
+                <button onclick="goToday()"
+                    class="px-4 py-1.5 text-sm font-semibold border border-stone-300 dark:border-gray-700 rounded-full text-stone-600 dark:text-gray-400 hover:bg-gray-900 hover:text-white dark:hover:bg-gray-100 dark:hover:text-gray-900 transition-all duration-200">
+                    Today
+                </button>
+            </div>
         </div>
 
         {{-- Month Navigation --}}
@@ -229,8 +237,9 @@
         const key = dateKey(year, month, d);
         if (tripsCache[key]) {
             tripsCache[key].slice(0, 2).forEach(trip => {
+                const isON      = trip.return_date && trip.return_date !== trip.trip_date;
                 const tag       = document.createElement('div');
-                tag.className   = 'text-xs px-1.5 py-0.5 rounded font-medium truncate mb-0.5 bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300';
+                tag.className   = `text-xs px-1.5 py-0.5 rounded font-medium truncate mb-0.5 ${isON ? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300' : 'bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300'}`;
                 tag.textContent = `🚗 ${trip.destination}`;
                 cell.appendChild(tag);
             });
