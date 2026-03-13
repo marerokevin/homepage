@@ -189,7 +189,7 @@
                     {{ !$isToday && !$cell['other'] && $isSunday ? 'sun-num' : '' }}
                 ">{{ $cell['day'] }}</div>
 
-                @foreach(array_slice($cellTrips, 0, 2) as $t)
+                @foreach($cellTrips as $t)
                 @php
                     $isON       = $t->return_date && $t->return_date !== $t->trip_date;
                     $departure  = \Carbon\Carbon::parse($t->trip_date . ' ' . $t->departure)->format('g:i A');
@@ -206,9 +206,6 @@
                     </div>
                 </div>
                 @endforeach
-                @if(count($cellTrips) > 2)
-                <div class="more-tag">+{{ count($cellTrips) - 2 }} more</div>
-                @endif
             </div>
             @endforeach
         </div>

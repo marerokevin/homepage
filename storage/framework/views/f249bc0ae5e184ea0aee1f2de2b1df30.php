@@ -49,8 +49,8 @@
         .day-num.sun-num      { color: #ef4444; }
         .day-num.other-sun    { color: #fca5a5; }
 
-        .trip-tag { font-size: 9px; padding: 3px 5px; border-radius: 5px; margin-bottom: 3px; background: #dbeafe; color: #1e40af; font-weight: 600; line-height: 1.4; }
-        .trip-tag.overnight-tag { background: #fef3c7; color: #92400e; }
+        .trip-tag { font-size: 9px; padding: 3px 5px; border-radius: 5px; margin-bottom: 3px; background: #fef3c7; color: #92400e; font-weight: 600; line-height: 1.4; }
+        .trip-tag.overnight-tag { background: #dbeafe; color: #1e40af; }
         .trip-tag .trip-dest  { font-size: 9px; font-weight: 700; margin-bottom: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .trip-tag .trip-meta  { font-size: 8px; font-weight: 400; opacity: 0.85; line-height: 1.5; }
         .more-tag { font-size: 9px; color: #aaa; padding-left: 2px; }
@@ -195,7 +195,7 @@
 
                 "><?php echo e($cell['day']); ?></div>
 
-                <?php $__currentLoopData = array_slice($cellTrips, 0, 2); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $t): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <?php $__currentLoopData = $cellTrips; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $t): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                 <?php
                     $isON       = $t->return_date && $t->return_date !== $t->trip_date;
                     $departure  = \Carbon\Carbon::parse($t->trip_date . ' ' . $t->departure)->format('g:i A');
@@ -213,9 +213,6 @@
                     </div>
                 </div>
                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                <?php if(count($cellTrips) > 2): ?>
-                <div class="more-tag">+<?php echo e(count($cellTrips) - 2); ?> more</div>
-                <?php endif; ?>
             </div>
             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
         </div>
