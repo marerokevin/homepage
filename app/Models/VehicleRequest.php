@@ -8,6 +8,7 @@ class VehicleRequest extends Model
 {
     protected $fillable = [
         'user_id',
+        'trip_number',
         'pickup',
         'destination',
         'vehicle',
@@ -16,6 +17,7 @@ class VehicleRequest extends Model
         'departure',
         'eta',
         'return_time',
+        'return_date',
     ];
 
     public function user()

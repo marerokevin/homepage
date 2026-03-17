@@ -4,17 +4,28 @@
             {{ __('Dashboard') }}
         </h2>
     </x-slot>
-
-    <a>test</a>
-
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900 dark:text-gray-100">
-                    {{ __("You're logged in!") }}
-                </div>
+            {{-- Login success alert --}}
+            @if(session()->has('url.intended') || !session()->has('_previous'))
+            <div id="login-alert" class="mb-6 flex items-center gap-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-800 dark:text-green-300 rounded-xl px-5 py-4 text-sm font-medium shadow-sm transition-opacity duration-700 opacity-0">
+                <span class="text-lg">✅</span>
+                Welcome back, {{ Auth::user()->name }}! You're now logged in.
             </div>
+            <script>
+                const alert = document.getElementById('login-alert');
+                // Fade in
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => { alert.style.opacity = '1'; });
+                });
+                // Fade out after 3 seconds
+                setTimeout(() => {
+                    alert.style.opacity = '0';
+                    setTimeout(() => alert.remove(), 700);
+                }, 3000);
+            </script>
+            @endif
 
             {{-- Quick Access --}}
             <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
