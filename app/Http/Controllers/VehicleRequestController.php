@@ -9,8 +9,6 @@ use Carbon\Carbon;
 
 class VehicleRequestController extends Controller
 {
-    // Return all requests for a given month as JSON
-    // Includes trips that START or END in the given month
     public function index(Request $request)
     {
         $month = $request->query('month', now()->month);
@@ -26,6 +24,7 @@ class VehicleRequestController extends Controller
             ->get()
             ->map(fn($r) => [
                 'id'          => $r->id,
+                'trip_number' => $r->trip_number,
                 'user_id'     => $r->user_id,
                 'user_name'   => $r->user->name,
                 'pickup'      => $r->pickup,
@@ -42,7 +41,6 @@ class VehicleRequestController extends Controller
         return response()->json($requests);
     }
 
-    // Store a new request with overnight-aware overlap check
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -61,9 +59,8 @@ class VehicleRequestController extends Controller
         $departure  = $validated['departure'];
         $returnTime = $validated['return_time'] ?? null;
 
-        // Always compute return_date on the server — ignore whatever client sends
+        // Always compute return_date server-side
         if ($returnTime) {
-            // If return time is earlier than departure time, it's the next day (overnight)
             $returnDate = ($returnTime < $departure)
                 ? Carbon::parse($tripDate)->addDay()->toDateString()
                 : $tripDate;
@@ -77,7 +74,7 @@ class VehicleRequestController extends Controller
             ? Carbon::parse("$returnDate $returnTime")
             : Carbon::parse("$returnDate 23:59:59");
 
-        // Get all existing bookings for this plate
+        // Overlap check for same plate
         $existing = VehicleRequest::where('plate', $validated['plate'])->get();
 
         foreach ($existing as $trip) {
@@ -86,7 +83,6 @@ class VehicleRequestController extends Controller
                 ? Carbon::parse(($trip->return_date ?? $trip->trip_date) . ' ' . $trip->return_time)
                 : Carbon::parse(($trip->return_date ?? $trip->trip_date) . ' 23:59:59');
 
-            // Overlap: new starts before existing ends AND new ends after existing starts
             if ($newStart->lt($existEnd) && $newEnd->gt($existStart)) {
                 return response()->json([
                     'error' => 'This vehicle is already scheduled during that time ('
@@ -97,16 +93,24 @@ class VehicleRequestController extends Controller
             }
         }
 
+        // Auto-increment trip number, resetting each month
+        $lastTrip   = VehicleRequest::whereYear('trip_date', Carbon::parse($tripDate)->year)
+            ->whereMonth('trip_date', Carbon::parse($tripDate)->month)
+            ->max('trip_number');
+        $tripNumber = ($lastTrip ?? 0) + 1;
+
         $vehicleRequest = VehicleRequest::create([
             ...$validated,
             'user_id'     => Auth::id(),
             'return_date' => $returnDate,
+            'trip_number' => $tripNumber,
         ]);
 
         $vehicleRequest->load('user:id,name');
 
         return response()->json([
             'id'          => $vehicleRequest->id,
+            'trip_number' => $vehicleRequest->trip_number,
             'user_id'     => $vehicleRequest->user_id,
             'user_name'   => $vehicleRequest->user->name,
             'pickup'      => $vehicleRequest->pickup,
@@ -121,7 +125,6 @@ class VehicleRequestController extends Controller
         ], 201);
     }
 
-    // Delete — only the creator can cancel
     public function destroy($id)
     {
         $vehicleRequest = VehicleRequest::findOrFail($id);

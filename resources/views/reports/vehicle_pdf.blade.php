@@ -49,11 +49,15 @@
         .day-num.sun-num      { color: #ef4444; }
         .day-num.other-sun    { color: #fca5a5; }
 
-        .trip-tag { font-size: 9px; padding: 3px 5px; border-radius: 5px; margin-bottom: 3px; background: #fef3c7; color: #92400e; font-weight: 600; line-height: 1.4; }
-        .trip-tag.overnight-tag { background: #dbeafe; color: #1e40af; }
+        .trip-tag { font-size: 9px; padding: 3px 5px; border-radius: 5px; margin-bottom: 3px; background: #fef3c7; color: #92400e; font-weight: 600; line-height: 1.4; border-left: 3px solid #d97706; }
+        .trip-tag.overnight-tag { background: #dbeafe; color: #1e40af; border-left: 3px solid #2563eb; }
         .trip-tag .trip-dest  { font-size: 9px; font-weight: 700; margin-bottom: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .trip-tag .trip-meta  { font-size: 8px; font-weight: 400; opacity: 0.85; line-height: 1.5; }
         .more-tag { font-size: 9px; color: #aaa; padding-left: 2px; }
+
+        /* Column borders for day/overnight spans */
+        .cal-cell.has-day-trip    { border-top: 2px solid #d97706; }
+        .cal-cell.has-overnight   { border-top: 2px solid #2563eb; }
 
         /* Footer */
         .footer { margin-top: 20px; display: flex; justify-content: space-between; font-size: 10px; color: #aaa; }
@@ -180,8 +184,14 @@
                 $isSunday  = ($colIdx % 7) === 0;
                 $isToday   = $cell['date'] === $today;
                 $cellTrips = $cell['date'] ? ($tripsByDate[$cell['date']] ?? []) : [];
+                $hasOvernight = collect($cellTrips)->contains(fn($t) => $t->return_date && $t->return_date !== $t->trip_date);
+                $hasDay       = collect($cellTrips)->contains(fn($t) => !($t->return_date && $t->return_date !== $t->trip_date));
             @endphp
-            <div class="cal-cell {{ $cell['other'] ? 'other-month' : '' }} {{ $isToday ? 'today' : '' }}">
+            <div class="cal-cell
+                {{ $cell['other'] ? 'other-month' : '' }}
+                {{ $isToday ? 'today' : '' }}
+                {{ $hasOvernight ? 'has-overnight' : ($hasDay ? 'has-day-trip' : '') }}
+            ">
                 <div class="day-num
                     {{ $isToday ? 'today-num' : '' }}
                     {{ !$isToday && $cell['other'] && $isSunday ? 'other-sun' : '' }}

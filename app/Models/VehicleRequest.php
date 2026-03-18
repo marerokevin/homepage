@@ -19,7 +19,6 @@ class VehicleRequest extends Model
         'return_time',
         'return_date',
     ];
-
     public function user()
     {
         return $this->belongsTo(User::class);
