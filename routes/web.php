@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\PostController;
@@ -36,6 +37,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Dashboard & Calendar
     Route::get('/dashboard', fn() => view('dashboard'))->name('dashboard');
     Route::get('/calendar', fn() => view('calendar'))->name('calendar');
+
+    // Admin user management
+    Route::get('/admin/users',                          [UserController::class, 'index'])->name('admin.users');
+    Route::patch('/admin/users/{user}/toggle-vehicle',       [UserController::class, 'toggleVehicle']);
+    Route::patch('/admin/users/{user}/toggle-vehicle-admin', [UserController::class, 'toggleVehicleAdmin']);
+
+    // Vehicle admin users dropdown
+    Route::get('/vehicle-requests/users', [VehicleRequestController::class, 'users']);
 
     // Vehicle Requests API
     Route::get('/vehicle-requests',         [VehicleRequestController::class, 'index']);

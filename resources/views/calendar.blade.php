@@ -5,11 +5,11 @@
 @section('content')
 
 <div class="min-h-screen bg-stone-100 dark:bg-gray-950 py-10 px-4">
-    <div class="max-w-4xl mx-auto">
+    <div class="max-w-5xl mx-auto">
 
         {{-- Header --}}
-        <div class="flex items-center justify-between mb-8">
-            <h1 class="text-4xl font-bold text-gray-900 dark:text-gray-100 tracking-tight">Car Arrangement</h1>
+        <div class="flex items-center justify-between mb-6">
+            <h1 class="text-4xl font-bold text-gray-900 dark:text-gray-100 tracking-tight">Calendar</h1>
             <div class="flex items-center gap-3">
                 @if(Auth::user()->is_admin)
                 <a href="{{ route('reports.vehicle') }}"
@@ -22,6 +22,18 @@
                     Today
                 </button>
             </div>
+        </div>
+
+        {{-- Tabs --}}
+        <div class="flex gap-2 mb-6">
+            <button id="tab-vehicle" onclick="switchTab('vehicle')"
+                class="px-5 py-2 rounded-full text-sm font-semibold transition-all duration-200 bg-gray-900 text-white dark:bg-gray-100 dark:text-gray-900">
+                🚗 Vehicle Trips
+            </button>
+            <button id="tab-rooms" onclick="switchTab('rooms')"
+                class="px-5 py-2 rounded-full text-sm font-semibold transition-all duration-200 border border-stone-300 dark:border-gray-700 text-stone-600 dark:text-gray-400 hover:bg-gray-900 hover:text-white dark:hover:bg-gray-100 dark:hover:text-gray-900">
+                🏢 Conference Rooms
+            </button>
         </div>
 
         {{-- Month Navigation --}}
@@ -49,14 +61,20 @@
             <div id="calGrid" class="gap-px bg-stone-200 dark:bg-gray-800" style="display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); grid-auto-rows:1fr;"></div>
         </div>
 
+        {{-- Room legend (only shown on rooms tab) --}}
+        <div id="roomLegend" class="hidden mt-4 flex flex-wrap gap-3">
+            <span class="flex items-center gap-1.5 text-xs text-stone-500 dark:text-gray-400"><span class="w-3 h-3 rounded-full bg-purple-400 inline-block"></span> ODP Conference Room</span>
+            <span class="flex items-center gap-1.5 text-xs text-stone-500 dark:text-gray-400"><span class="w-3 h-3 rounded-full bg-green-400 inline-block"></span> Admin Conference Room</span>
+            <span class="flex items-center gap-1.5 text-xs text-stone-500 dark:text-gray-400"><span class="w-3 h-3 rounded-full bg-pink-400 inline-block"></span> Lobby - A</span>
+            <span class="flex items-center gap-1.5 text-xs text-stone-500 dark:text-gray-400"><span class="w-3 h-3 rounded-full bg-orange-400 inline-block"></span> Lobby - B</span>
+        </div>
+
     </div>
 </div>
 
-{{-- Trip Booking Modal --}}
+{{-- Vehicle Trip Modal --}}
 <div id="eventModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center px-4 py-6">
     <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-xl flex flex-col" style="max-height:90vh;">
-
-        {{-- Modal Header --}}
         <div class="flex items-center justify-between px-6 pt-6 pb-4 border-b border-stone-200 dark:border-gray-700 shrink-0">
             <div>
                 <h2 id="modalDateTitle" class="text-xl font-bold text-gray-900 dark:text-gray-100"></h2>
@@ -64,30 +82,32 @@
             </div>
             <button onclick="closeModal()" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-stone-100 dark:hover:bg-gray-800 text-stone-400 hover:text-stone-700 dark:hover:text-gray-200 transition text-lg">&times;</button>
         </div>
-
-        {{-- Scrollable Body --}}
         <div class="overflow-y-auto px-6 py-4 space-y-5 flex-1">
-
             <div id="tripList" class="space-y-2"></div>
-
             <div class="border-t border-stone-200 dark:border-gray-700 pt-4">
                 <p class="text-xs font-semibold uppercase tracking-widest text-stone-400 dark:text-gray-500 mb-4">New Trip Request</p>
             </div>
-
             <div id="tripError" class="hidden px-3 py-2 rounded-xl bg-red-50 dark:bg-red-900/30 text-xs text-red-600 dark:text-red-400"></div>
 
+            {{-- Book for manager (vehicle admin only) --}}
+            <div id="bookedForSection" class="hidden">
+                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">👤 Book on behalf of</label>
+                <select id="bookedFor"
+                    class="w-full px-3 py-2 rounded-xl border border-stone-300 dark:border-gray-700 bg-stone-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-100">
+                    <option value="">— Booking for myself —</option>
+                </select>
+                <p class="text-xs text-stone-400 dark:text-gray-500 mt-1">You will appear as the requester. The manager's name will be noted.</p>
+            </div>
             <div>
                 <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">📍 Place of Pickup</label>
                 <input type="text" id="tripPickup" value="Crestec Philippines, Inc., Lima Technology Center, Lipa City, Batangas"
                     class="w-full px-3 py-2 rounded-xl border border-stone-300 dark:border-gray-700 bg-stone-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-100" />
             </div>
-
             <div>
                 <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">🏁 Destination</label>
                 <input type="text" id="tripDestination" placeholder="Enter destination address..."
                     class="w-full px-3 py-2 rounded-xl border border-stone-300 dark:border-gray-700 bg-stone-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-100" />
             </div>
-
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">🚗 Vehicle Make / Model</label>
@@ -100,7 +120,6 @@
                         class="w-full px-3 py-2 rounded-xl border border-stone-300 dark:border-gray-700 bg-stone-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-100" />
                 </div>
             </div>
-
             <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:1rem;">
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">🕐 Departure</label>
@@ -118,15 +137,11 @@
                         class="w-full px-3 py-2 rounded-xl border border-stone-300 dark:border-gray-700 bg-stone-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-100" />
                 </div>
             </div>
-
-            {{-- Overnight indicator --}}
             <div id="overnightNotice" class="hidden px-3 py-2 rounded-xl bg-amber-50 dark:bg-amber-900/30 text-xs text-amber-700 dark:text-amber-300">
                 🌙 Overnight trip detected — return date set to <strong id="overnightReturnDate"></strong>
                 <input type="hidden" id="tripReturnDate" />
             </div>
-
         </div>
-
         <div class="flex gap-3 px-6 py-4 border-t border-stone-200 dark:border-gray-700 shrink-0">
             <button onclick="saveTrip()" id="saveTripBtn"
                 class="flex-1 py-2.5 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 font-semibold rounded-xl hover:opacity-80 transition text-sm">
@@ -140,23 +155,114 @@
     </div>
 </div>
 
+{{-- Conference Room Booking Modal --}}
+<div id="roomModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center px-4 py-6">
+    <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-xl flex flex-col" style="max-height:90vh;">
+        <div class="flex items-center justify-between px-6 pt-6 pb-4 border-b border-stone-200 dark:border-gray-700 shrink-0">
+            <div>
+                <h2 id="roomModalDateTitle" class="text-xl font-bold text-gray-900 dark:text-gray-100"></h2>
+                <p class="text-xs text-stone-400 dark:text-gray-500 mt-0.5">Conference Room Booking</p>
+            </div>
+            <button onclick="closeRoomModal()" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-stone-100 dark:hover:bg-gray-800 text-stone-400 hover:text-stone-700 dark:hover:text-gray-200 transition text-lg">&times;</button>
+        </div>
+        <div class="overflow-y-auto px-6 py-4 space-y-5 flex-1">
+            <div id="roomBookingList" class="space-y-2"></div>
+            <div class="border-t border-stone-200 dark:border-gray-700 pt-4">
+                <p class="text-xs font-semibold uppercase tracking-widest text-stone-400 dark:text-gray-500 mb-4">New Room Booking</p>
+            </div>
+            <div id="roomError" class="hidden px-3 py-2 rounded-xl bg-red-50 dark:bg-red-900/30 text-xs text-red-600 dark:text-red-400"></div>
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">🏢 Conference Room</label>
+                <select id="roomName" class="w-full px-3 py-2 rounded-xl border border-stone-300 dark:border-gray-700 bg-stone-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-100">
+                    <option value="">Select a room...</option>
+                    <option value="ODP Conference Room">ODP Conference Room</option>
+                    <option value="Admin Conference Room">Admin Conference Room</option>
+                    <option value="Lobby - A">Lobby - A</option>
+                    <option value="Lobby - B">Lobby - B</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">📝 Purpose / Meeting Title</label>
+                <input type="text" id="roomTitle" placeholder="e.g. Weekly Sync, Client Meeting..."
+                    class="w-full px-3 py-2 rounded-xl border border-stone-300 dark:border-gray-700 bg-stone-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-100" />
+            </div>
+
+            {{-- Google Calendar-style time picker --}}
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">📝 Time</label>
+                <div class="flex items-center gap-2">
+                    {{-- Start time combined --}}
+                    <select id="roomStartTime" onchange="computeDurationLabel()"
+                        class="px-3 py-2 rounded-xl border border-stone-300 dark:border-gray-700 bg-stone-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-100">
+                    </select>
+
+                    <span class="text-gray-400 font-bold px-1">–</span>
+
+                <div class="flex items-center gap-2">
+                    {{-- End time + duration row --}}
+                    <div class="flex items-center gap-2">
+                        <select id="roomEndTime" onchange="computeDurationLabel()"
+                            class="px-3 py-2 rounded-xl border border-stone-300 dark:border-gray-700 bg-stone-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-100">
+                        </select>
+                    </div>
+
+                    {{-- Duration below --}}
+                    <div class="flex flex-col">
+                        <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Duration:</label>
+                        <span id="roomDurationLabel"
+                            class="text-xs text-stone-400 dark:text-gray-500 mt-1">
+                        </span>
+                    </div>
+                </div>
+            </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">👥 Number of Attendees</label>
+                <input type="number" id="roomAttendees" min="1" value="1"
+                    class="w-full px-3 py-2 rounded-xl border border-stone-300 dark:border-gray-700 bg-stone-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-100" />
+            </div>
+        </div>
+        <div class="flex gap-3 px-6 py-4 border-t border-stone-200 dark:border-gray-700 shrink-0">
+            <button onclick="saveRoomBooking()" id="saveRoomBtn"
+                class="flex-1 py-2.5 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 font-semibold rounded-xl hover:opacity-80 transition text-sm">
+                Save Booking
+            </button>
+            <button onclick="closeRoomModal()"
+                class="px-5 py-2.5 border border-stone-300 dark:border-gray-700 text-stone-600 dark:text-gray-400 font-medium rounded-xl hover:bg-stone-100 dark:hover:bg-gray-800 transition text-sm">
+                Cancel
+            </button>
+        </div>
+    </div>
+</div>
+
 <script>
     const MONTHS          = ['January','February','March','April','May','June','July','August','September','October','November','December'];
     const CURRENT_USER_ID = {{ Auth::id() }};
+    const IS_ADMIN        = {{ Auth::user()->is_admin ? 'true' : 'false' }};
+    const IS_VEHICLE_ADMIN = {{ Auth::user()->is_vehicle_admin ? 'true' : 'false' }};
     const CSRF_TOKEN      = '{{ csrf_token() }}';
     const DEFAULT_PICKUP  = 'Crestec Philippines, Inc., Lima Technology Center, Lipa City, Batangas';
+
+    const ROOM_COLORS = {
+        'ODP Conference Room':   'bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300',
+        'Admin Conference Room': 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300',
+        'Lobby - A':             'bg-pink-100 text-pink-700 dark:bg-pink-900 dark:text-pink-300',
+        'Lobby - B':             'bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-300',
+    };
 
     let currentDate  = new Date();
     let currentYear  = currentDate.getFullYear();
     let currentMonth = currentDate.getMonth();
     let selectedDate = null;
     let tripsCache   = {};
+    let roomsCache   = {};
+    let activeTab    = 'vehicle';
 
     function dateKey(year, month, day) {
         return `${year}-${String(month + 1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
     }
 
-    // Format a Date object as YYYY-MM-DD in LOCAL time (avoids UTC timezone shift)
     function localDateKey(date) {
         const y = date.getFullYear();
         const m = String(date.getMonth() + 1).padStart(2, '0');
@@ -164,32 +270,65 @@
         return `${y}-${m}-${d}`;
     }
 
+    // ── Tab switching ──────────────────────────────────────────────
+    function switchTab(tab) {
+        activeTab = tab;
+        const vBtn = document.getElementById('tab-vehicle');
+        const rBtn = document.getElementById('tab-rooms');
+        const legend = document.getElementById('roomLegend');
+        const active   = 'bg-gray-900 text-white dark:bg-gray-100 dark:text-gray-900';
+        const inactive = 'border border-stone-300 dark:border-gray-700 text-stone-600 dark:text-gray-400 hover:bg-gray-900 hover:text-white dark:hover:bg-gray-100 dark:hover:text-gray-900';
+
+        if (tab === 'vehicle') {
+            vBtn.className = `px-5 py-2 rounded-full text-sm font-semibold transition-all duration-200 ${active}`;
+            rBtn.className = `px-5 py-2 rounded-full text-sm font-semibold transition-all duration-200 ${inactive}`;
+            legend.classList.add('hidden');
+        } else {
+            rBtn.className = `px-5 py-2 rounded-full text-sm font-semibold transition-all duration-200 ${active}`;
+            vBtn.className = `px-5 py-2 rounded-full text-sm font-semibold transition-all duration-200 ${inactive}`;
+            legend.classList.remove('hidden');
+        }
+        fetchAll();
+    }
+
+    // ── Data fetching ──────────────────────────────────────────────
+    async function fetchAll() {
+        await Promise.all([fetchTrips(), fetchRooms()]);
+        renderCalendar();
+    }
+
     async function fetchTrips() {
         try {
             const res  = await fetch(`/vehicle-requests?month=${currentMonth + 1}&year=${currentYear}`);
             const data = await res.json();
             tripsCache = {};
-
             data.forEach(trip => {
                 const start   = new Date(trip.trip_date + 'T00:00:00');
                 const end     = new Date((trip.return_date || trip.trip_date) + 'T00:00:00');
                 const current = new Date(start);
-
                 while (current <= end) {
                     const key = localDateKey(current);
                     if (!tripsCache[key]) tripsCache[key] = [];
-                    if (!tripsCache[key].find(t => t.id === trip.id)) {
-                        tripsCache[key].push(trip);
-                    }
+                    if (!tripsCache[key].find(t => t.id === trip.id)) tripsCache[key].push(trip);
                     current.setDate(current.getDate() + 1);
                 }
             });
-        } catch (e) {
-            console.error('Failed to load trips', e);
-        }
-        renderCalendar();
+        } catch (e) { console.error('Failed to load trips', e); }
     }
 
+    async function fetchRooms() {
+        try {
+            const res  = await fetch(`/room-bookings?month=${currentMonth + 1}&year=${currentYear}`);
+            const data = await res.json();
+            roomsCache = {};
+            data.forEach(b => {
+                if (!roomsCache[b.booking_date]) roomsCache[b.booking_date] = [];
+                roomsCache[b.booking_date].push(b);
+            });
+        } catch (e) { console.error('Failed to load room bookings', e); }
+    }
+
+    // ── Calendar rendering ─────────────────────────────────────────
     function renderCalendar() {
         document.getElementById('monthLabel').textContent = `${MONTHS[currentMonth]} ${currentYear}`;
         const grid = document.getElementById('calGrid');
@@ -235,28 +374,48 @@
         cell.appendChild(num);
 
         const key = dateKey(year, month, d);
-        if (tripsCache[key]) {
+
+        if (activeTab === 'vehicle' && tripsCache[key]) {
             tripsCache[key].slice(0, 2).forEach(trip => {
-                const isON      = trip.return_date && trip.return_date !== trip.trip_date;
-                const tag       = document.createElement('div');
+                const isON = trip.return_date && trip.return_date !== trip.trip_date;
+                const tag  = document.createElement('div');
                 tag.className   = `text-xs px-1.5 py-0.5 rounded font-medium truncate mb-0.5 ${isON ? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300' : 'bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300'}`;
                 tag.textContent = `🚗 ${trip.destination}`;
                 cell.appendChild(tag);
             });
             if (tripsCache[key].length > 2) {
-                const more       = document.createElement('div');
+                const more = document.createElement('div');
                 more.className   = 'text-xs text-stone-400 dark:text-gray-600 px-1';
                 more.textContent = `+${tripsCache[key].length - 2} more`;
                 cell.appendChild(more);
             }
         }
 
+        if (activeTab === 'rooms' && roomsCache[key]) {
+            roomsCache[key].slice(0, 3).forEach(b => {
+                const tag = document.createElement('div');
+                tag.className   = `text-xs px-1.5 py-0.5 rounded font-medium truncate mb-0.5 ${ROOM_COLORS[b.room] || 'bg-gray-100 text-gray-700'}`;
+                tag.textContent = `🏢 ${b.room.replace('Conference Room','').replace('Lobby','Lobby').trim()}`;
+                cell.appendChild(tag);
+            });
+            if (roomsCache[key].length > 3) {
+                const more = document.createElement('div');
+                more.className   = 'text-xs text-stone-400 dark:text-gray-600 px-1';
+                more.textContent = `+${roomsCache[key].length - 3} more`;
+                cell.appendChild(more);
+            }
+        }
+
         if (!otherMonth) {
-            cell.addEventListener('click', () => openModal(year, month, d));
+            cell.addEventListener('click', () => {
+                if (activeTab === 'vehicle') openModal(year, month, d);
+                else openRoomModal(year, month, d);
+            });
         }
         return cell;
     }
 
+    // ── Vehicle Trip Modal ─────────────────────────────────────────
     function openModal(year, month, day) {
         selectedDate = dateKey(year, month, day);
         document.getElementById('modalDateTitle').textContent = `${MONTHS[month]} ${day}, ${year}`;
@@ -270,8 +429,30 @@
         document.getElementById('tripReturnDate').value  = '';
         document.getElementById('overnightNotice').classList.add('hidden');
         document.getElementById('tripError').classList.add('hidden');
+
+        // Show "book for" dropdown for vehicle admins
+        if (IS_VEHICLE_ADMIN) {
+            document.getElementById('bookedForSection').classList.remove('hidden');
+            loadUsersDropdown();
+        }
+
         renderTripList();
         document.getElementById('eventModal').classList.remove('hidden');
+    }
+
+    async function loadUsersDropdown() {
+        const select = document.getElementById('bookedFor');
+        if (select.children.length > 1) return; // already loaded
+        try {
+            const res   = await fetch('/vehicle-requests/users', { headers: { 'Accept': 'application/json' } });
+            const users = await res.json();
+            users.forEach(u => {
+                const opt   = document.createElement('option');
+                opt.value   = u.name;
+                opt.textContent = u.name;
+                select.appendChild(opt);
+            });
+        } catch (e) { console.error('Failed to load users', e); }
     }
 
     function closeModal() {
@@ -302,10 +483,9 @@
                     </div>
                     ${canCancel
                         ? `<button onclick="deleteTrip(${trip.id}, '${trip.trip_date}', '${trip.return_date ?? trip.trip_date}')" class="text-xs text-stone-300 hover:text-red-500 transition font-bold ml-2" title="Cancel">✕</button>`
-                        : `<span class="text-xs text-stone-300 ml-2" title="Only the requester can cancel this">🔒</span>`
-                    }
+                        : `<span class="text-xs text-stone-300 ml-2" title="Only the requester can cancel this">🔒</span>`}
                 </div>
-                <div class="text-stone-500 dark:text-gray-400 text-xs">👤 ${trip.user_name}</div>
+                <div class="text-stone-500 dark:text-gray-400 text-xs">👤 ${trip.user_name}${trip.booked_for ? ` <span class="text-purple-500">(for ${trip.booked_for})</span>` : ''}</div>
                 <div class="text-stone-500 dark:text-gray-400 text-xs">📍 ${trip.pickup}</div>
                 <div class="text-stone-500 dark:text-gray-400 text-xs">🏁 ${trip.destination}</div>
                 <div class="flex flex-wrap gap-4 text-xs text-stone-400 dark:text-gray-500 pt-1">
@@ -322,9 +502,8 @@
         const departure  = document.getElementById('tripDeparture').value;
         const returnTime = document.getElementById('tripReturn').value;
         const notice     = document.getElementById('overnightNotice');
-
         if (departure && returnTime && returnTime < departure) {
-            const nextDay = new Date(selectedDate + 'T00:00:00');
+            const nextDay    = new Date(selectedDate + 'T00:00:00');
             nextDay.setDate(nextDay.getDate() + 1);
             const nextDayStr = localDateKey(nextDay);
             document.getElementById('tripReturnDate').value = nextDayStr;
@@ -348,128 +527,319 @@
         const returnDate  = document.getElementById('tripReturnDate').value || null;
 
         if (!destination || !vehicle || !plate || !departure) {
-            showError('Please fill in: Destination, Vehicle, Plate Number, and Departure time.');
+            showTripError('Please fill in: Destination, Vehicle, Plate Number, and Departure time.');
             return;
         }
 
-        const btn       = document.getElementById('saveTripBtn');
-        btn.disabled    = true;
-        btn.textContent = 'Saving...';
+        const btn = document.getElementById('saveTripBtn');
+        btn.disabled = true; btn.textContent = 'Saving...';
+
+        const bookedFor = IS_VEHICLE_ADMIN ? (document.getElementById('bookedFor').value || null) : null;
 
         try {
-            const res = await fetch('/vehicle-requests', {
-                method:  'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': CSRF_TOKEN,
-                    'Accept':       'application/json',
-                },
-                body: JSON.stringify({
-                    pickup, destination, vehicle, plate,
-                    trip_date:   selectedDate,
-                    departure,
-                    eta:         eta || null,
-                    return_time: returnTime || null,
-                    return_date: returnDate,
-                }),
+            const res  = await fetch('/vehicle-requests', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF_TOKEN, 'Accept': 'application/json' },
+                body: JSON.stringify({ pickup, destination, vehicle, plate, trip_date: selectedDate, departure, eta: eta || null, return_time: returnTime || null, return_date: returnDate, booked_for: bookedFor }),
             });
-
             const data = await res.json();
+            if (!res.ok) { showTripError(data.error || 'Failed to save request.'); return; }
 
-            if (!res.ok) {
-                showError(data.error || 'Failed to save request.');
-                return;
-            }
-
-            const start   = new Date(data.trip_date + 'T00:00:00');
-            const end     = new Date((data.return_date || data.trip_date) + 'T00:00:00');
-            const current = new Date(start);
-            while (current <= end) {
-                const key = localDateKey(current);
+            const start = new Date(data.trip_date + 'T00:00:00');
+            const end   = new Date((data.return_date || data.trip_date) + 'T00:00:00');
+            const cur   = new Date(start);
+            while (cur <= end) {
+                const key = localDateKey(cur);
                 if (!tripsCache[key]) tripsCache[key] = [];
-                if (!tripsCache[key].find(t => t.id === data.id)) {
-                    tripsCache[key].push(data);
-                }
-                current.setDate(current.getDate() + 1);
+                if (!tripsCache[key].find(t => t.id === data.id)) tripsCache[key].push(data);
+                cur.setDate(cur.getDate() + 1);
             }
-
-            renderCalendar();
-            renderTripList();
-
-            document.getElementById('tripDestination').value = '';
-            document.getElementById('tripVehicle').value     = '';
-            document.getElementById('tripPlate').value       = '';
-            document.getElementById('tripDeparture').value   = '';
-            document.getElementById('tripETA').value         = '';
-            document.getElementById('tripReturn').value      = '';
-            document.getElementById('tripReturnDate').value  = '';
+            renderCalendar(); renderTripList();
+            ['tripDestination','tripVehicle','tripPlate','tripDeparture','tripETA','tripReturn','tripReturnDate'].forEach(id => document.getElementById(id).value = '');
             document.getElementById('overnightNotice').classList.add('hidden');
             document.getElementById('tripError').classList.add('hidden');
-
-        } catch (e) {
-            showError('Network error. Please try again.');
-        } finally {
-            btn.disabled    = false;
-            btn.textContent = 'Save Trip Request';
-        }
+        } catch (e) { showTripError('Network error. Please try again.'); }
+        finally { btn.disabled = false; btn.textContent = 'Save Trip Request'; }
     }
 
     async function deleteTrip(id, tripDate, returnDate) {
         if (!confirm('Cancel this trip request?')) return;
-
-        const res = await fetch(`/vehicle-requests/${id}`, {
-            method:  'DELETE',
-            headers: { 'X-CSRF-TOKEN': CSRF_TOKEN, 'Accept': 'application/json' },
-        });
-
+        const res  = await fetch(`/vehicle-requests/${id}`, { method: 'DELETE', headers: { 'X-CSRF-TOKEN': CSRF_TOKEN, 'Accept': 'application/json' } });
         const data = await res.json();
+        if (!res.ok) { alert(data.error || 'Could not cancel.'); return; }
+        const start = new Date(tripDate + 'T00:00:00');
+        const end   = new Date((returnDate || tripDate) + 'T00:00:00');
+        const cur   = new Date(start);
+        while (cur <= end) {
+            const key = localDateKey(cur);
+            if (tripsCache[key]) { tripsCache[key] = tripsCache[key].filter(t => t.id !== id); if (!tripsCache[key].length) delete tripsCache[key]; }
+            cur.setDate(cur.getDate() + 1);
+        }
+        renderCalendar(); renderTripList();
+    }
 
-        if (!res.ok) {
-            alert(data.error || 'Could not cancel.');
+    function showTripError(msg) {
+        const el = document.getElementById('tripError');
+        el.textContent = msg; el.classList.remove('hidden');
+    }
+
+    // ── Conference Room Modal ──────────────────────────────────────
+    function openRoomModal(year, month, day) {
+        selectedDate = dateKey(year, month, day);
+        document.getElementById('roomModalDateTitle').textContent = `${MONTHS[month]} ${day}, ${year}`;
+        document.getElementById('roomName').value      = '';
+        document.getElementById('roomTitle').value     = '';
+        document.getElementById('roomAttendees').value = '1';
+        document.getElementById('roomError').classList.add('hidden');
+        resetRoomTimePicker();
+        renderRoomBookingList();
+        document.getElementById('roomModal').classList.remove('hidden');
+    }
+
+    function closeRoomModal() {
+        document.getElementById('roomModal').classList.add('hidden');
+        selectedDate = null;
+    }
+
+    function renderRoomBookingList() {
+        const list     = document.getElementById('roomBookingList');
+        list.innerHTML = '';
+        const bookings = roomsCache[selectedDate] || [];
+        if (bookings.length === 0) return;
+
+        const heading       = document.createElement('p');
+        heading.className   = 'text-xs font-semibold uppercase tracking-widest text-stone-400 dark:text-gray-500 mb-2';
+        heading.textContent = 'Room Bookings';
+        list.appendChild(heading);
+
+        bookings.forEach(b => {
+            const canCancel = b.user_id === CURRENT_USER_ID || IS_ADMIN;
+            const card      = document.createElement('div');
+            const colorClass = ROOM_COLORS[b.room] || 'bg-gray-100 text-gray-700';
+            card.className  = 'rounded-xl border border-stone-200 dark:border-gray-700 p-3 text-sm bg-stone-50 dark:bg-gray-800 space-y-1';
+            card.innerHTML  = `
+                <div class="flex justify-between items-start">
+                    <span class="text-xs font-semibold px-2 py-0.5 rounded-full ${colorClass}">🏢 ${b.room}</span>
+                    ${canCancel
+                        ? `<button onclick="deleteRoomBooking(${b.id})" class="text-xs text-stone-300 hover:text-red-500 transition font-bold ml-2" title="Cancel">✕</button>`
+                        : `<span class="text-xs text-stone-300 ml-2">🔒</span>`}
+                </div>
+                <div class="font-semibold text-gray-800 dark:text-gray-100 text-sm">📝 ${b.title}</div>
+                <div class="text-stone-500 dark:text-gray-400 text-xs">👤 ${b.user_name}</div>
+                <div class="text-stone-500 dark:text-gray-400 text-xs">🕐 ${b.start_time} – ${b.end_time} &nbsp;|&nbsp; 👥 ${b.attendees} attendee${b.attendees > 1 ? 's' : ''}</div>
+            `;
+            list.appendChild(card);
+        });
+    }
+
+    async function saveRoomBooking() {
+        const room      = document.getElementById('roomName').value;
+        const title     = document.getElementById('roomTitle').value.trim();
+        const startTime = document.getElementById('roomStartTime').value;
+        const endTime   = document.getElementById('roomEndTime').value;
+        const attendees = document.getElementById('roomAttendees').value;
+
+        if (!room || !title || !startTime || !endTime) {
+            showRoomError('Please fill in all fields.');
+            return;
+        }
+        if (endTime <= startTime) {
+            showRoomError('End time must be after start time.');
             return;
         }
 
-        // Remove from every date in the range
-        const start   = new Date(tripDate + 'T00:00:00');
-        const end     = new Date((returnDate || tripDate) + 'T00:00:00');
-        const current = new Date(start);
-        while (current <= end) {
-            const key = localDateKey(current);
-            if (tripsCache[key]) {
-                tripsCache[key] = tripsCache[key].filter(t => t.id !== id);
-                if (!tripsCache[key].length) delete tripsCache[key];
-            }
-            current.setDate(current.getDate() + 1);
+        const btn = document.getElementById('saveRoomBtn');
+        btn.disabled = true; btn.textContent = 'Saving...';
+
+        try {
+            const res  = await fetch('/room-bookings', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF_TOKEN, 'Accept': 'application/json' },
+                body: JSON.stringify({ room, title, booking_date: selectedDate, start_time: startTime, end_time: endTime, attendees: parseInt(attendees) }),
+            });
+            const data = await res.json();
+            if (!res.ok) { showRoomError(data.error || 'Failed to save booking.'); return; }
+
+            if (!roomsCache[selectedDate]) roomsCache[selectedDate] = [];
+            roomsCache[selectedDate].push(data);
+            renderCalendar(); renderRoomBookingList();
+            document.getElementById('roomName').value      = '';
+            document.getElementById('roomTitle').value     = '';
+            document.getElementById('roomAttendees').value = '1';
+            document.getElementById('roomError').classList.add('hidden');
+            resetRoomTimePicker();
+        } catch (e) { showRoomError('Network error. Please try again.'); }
+        finally { btn.disabled = false; btn.textContent = 'Save Booking'; }
+    }
+
+    async function deleteRoomBooking(id) {
+        if (!confirm('Cancel this room booking?')) return;
+        const res  = await fetch(`/room-bookings/${id}`, { method: 'DELETE', headers: { 'X-CSRF-TOKEN': CSRF_TOKEN, 'Accept': 'application/json' } });
+        const data = await res.json();
+        if (!res.ok) { alert(data.error || 'Could not cancel.'); return; }
+        if (roomsCache[selectedDate]) {
+            roomsCache[selectedDate] = roomsCache[selectedDate].filter(b => b.id !== id);
+            if (!roomsCache[selectedDate].length) delete roomsCache[selectedDate];
+        }
+        renderCalendar(); renderRoomBookingList();
+    }
+
+    // ── Room Time Picker ───────────────────────────────────────────
+    function onDurationChange() {
+        computeDurationLabel();
+    }
+
+    function computeRoomEndTime() {
+        computeDurationLabel();
+    }
+
+    function computeDurationLabel() {
+        const startVal = document.getElementById('roomStartTime').value;
+        const endSel   = document.getElementById('roomEndTime');
+        const endVal   = endSel.value;
+
+        if (!startVal) {
+            document.getElementById('roomDurationLabel').textContent = '';
+            return;
         }
 
-        renderCalendar();
-        renderTripList();
+        // Rebuild end time options to only show times after selected start
+        const [sh, sm] = startVal.split(':').map(Number);
+        const startMins = sh * 60 + sm;
+        const prevEnd   = endSel.value;
+
+        endSel.innerHTML = '';
+        for (let t = startMins + 15; t < 24 * 60; t += 15) {
+            const th    = Math.floor(t / 60);
+            const tm    = t % 60;
+            const val   = `${String(th).padStart(2,'0')}:${String(tm).padStart(2,'0')}`;
+            const h12   = th % 12 || 12;
+            const ampm  = th < 12 ? 'AM' : 'PM';
+            const label = `${h12}:${String(tm).padStart(2,'0')} ${ampm}`;
+            endSel.appendChild(new Option(label, val));
+        }
+
+        // Restore previous end or default to +1 hr
+        const defaultEnd = startMins + 60;
+        const deh  = Math.floor(defaultEnd / 60) % 24;
+        const dem  = defaultEnd % 60;
+        const dStr = `${String(deh).padStart(2,'0')}:${String(dem).padStart(2,'0')}`;
+        endSel.value = prevEnd && endSel.querySelector(`option[value="${prevEnd}"]`) ? prevEnd : dStr;
+
+        // Compute label
+        const [eh, em] = endSel.value.split(':').map(Number);
+        const diff = (eh * 60 + em) - startMins;
+
+        if (diff <= 0) {
+            document.getElementById('roomDurationLabel').textContent = '⚠ End time must be after start time';
+            document.getElementById('roomDurationLabel').className   = 'text-xs text-red-500';
+            return;
+        }
+
+        const hrs  = Math.floor(diff / 60);
+        const mins = diff % 60;
+        let label  = '';
+        if (hrs > 0)  label += `${hrs} hour${hrs > 1 ? 's' : ''}`;
+        if (mins > 0) label += (hrs > 0 ? ' ' : '') + `${mins} minute${mins > 1 ? 's' : ''}`;
+
+        document.getElementById('roomDurationLabel').textContent = `⏱ ${label}`;
+        document.getElementById('roomDurationLabel').className   = 'text-xs text-stone-400 dark:text-gray-500';
     }
 
-    function showError(msg) {
-        const el       = document.getElementById('tripError');
-        el.textContent = msg;
-        el.classList.remove('hidden');
+    function resetRoomTimePicker() {
+        const now = new Date();
+        let h     = now.getHours();
+        let m     = Math.ceil(now.getMinutes() / 15) * 15;
+        if (m === 60) { m = 0; h += 1; }
+        if (h >= 24) h = 0;
+
+        const startMins = h * 60 + m;
+        const endMins   = startMins + 60;
+
+        const startStr = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+        const endH     = Math.floor(endMins / 60) % 24;
+        const endM     = endMins % 60;
+        const endStr   = `${String(endH).padStart(2,'0')}:${String(endM).padStart(2,'0')}`;
+
+        // Rebuild start time options — only current time onwards
+        const startSel = document.getElementById('roomStartTime');
+        const endSel   = document.getElementById('roomEndTime');
+        startSel.innerHTML = '';
+        endSel.innerHTML   = '';
+
+        for (let t = 0; t < 24 * 60; t += 15) {
+            const th    = Math.floor(t / 60);
+            const tm    = t % 60;
+            const val   = `${String(th).padStart(2,'0')}:${String(tm).padStart(2,'0')}`;
+            const h12   = th % 12 || 12;
+            const ampm  = th < 12 ? 'AM' : 'PM';
+            const label = `${h12}:${String(tm).padStart(2,'0')} ${ampm}`;
+
+            // Start: only from current time onwards
+            if (t >= startMins) {
+                const opt = new Option(label, val);
+                startSel.appendChild(opt);
+            }
+
+            // End: only from current time + 15 min onwards
+            if (t > startMins) {
+                const opt = new Option(label, val);
+                endSel.appendChild(opt);
+            }
+        }
+
+        startSel.value = startStr;
+        endSel.value   = endStr;
+
+        document.getElementById('roomDurationLabel').textContent = '⏱ 1 hour';
+        document.getElementById('roomDurationLabel').className   = 'text-xs text-stone-400 dark:text-gray-500';
     }
 
+    function showRoomError(msg) {
+        const el = document.getElementById('roomError');
+        el.textContent = msg; el.classList.remove('hidden');
+    }
+
+    // ── Shared controls ────────────────────────────────────────────
     function changeMonth(dir) {
         currentMonth += dir;
         if (currentMonth > 11) { currentMonth = 0; currentYear++; }
         if (currentMonth < 0)  { currentMonth = 11; currentYear--; }
-        fetchTrips();
+        fetchAll();
     }
 
     function goToday() {
         currentYear  = new Date().getFullYear();
         currentMonth = new Date().getMonth();
-        fetchTrips();
+        fetchAll();
     }
 
-    document.getElementById('eventModal').addEventListener('click', function(e) {
-        if (e.target === this) closeModal();
-    });
+    document.getElementById('eventModal').addEventListener('click', function(e) { if (e.target === this) closeModal(); });
+    document.getElementById('roomModal').addEventListener('click',  function(e) { if (e.target === this) closeRoomModal(); });
 
-    fetchTrips();
+    fetchAll();
+
+    function hasRoomConflict(room, startTime, endTime) {
+        const bookings = roomsCache[selectedDate] || [];
+
+        const toMinutes = (t) => {
+            const [h, m] = t.split(':').map(Number);
+            return h * 60 + m;
+        };
+
+        const newStart = toMinutes(startTime);
+        const newEnd   = toMinutes(endTime);
+
+        return bookings.some(b => {
+            if (b.room !== room) return false;
+
+            const existingStart = toMinutes(b.start_time);
+            const existingEnd   = toMinutes(b.end_time);
+
+            // overlap condition
+            return newStart < existingEnd && newEnd > existingStart;
+        });
+    }
 </script>
 
 @endsection

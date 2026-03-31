@@ -17,6 +17,7 @@ class VehicleRequest extends Model
         'departure',
         'eta',
         'return_time',
+        'booked_for',
         'return_date',
     ];
     public function user()

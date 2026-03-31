@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\VehicleRequest;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
@@ -23,22 +24,32 @@ class VehicleRequestController extends Controller
             })
             ->get()
             ->map(fn($r) => [
-                'id'          => $r->id,
-                'trip_number' => $r->trip_number,
-                'user_id'     => $r->user_id,
-                'user_name'   => $r->user->name,
-                'pickup'      => $r->pickup,
-                'destination' => $r->destination,
-                'vehicle'     => $r->vehicle,
-                'plate'       => $r->plate,
-                'trip_date'   => $r->trip_date,
-                'departure'   => $r->departure,
-                'eta'         => $r->eta,
-                'return_time' => $r->return_time,
-                'return_date' => $r->return_date,
+                'id'           => $r->id,
+                'trip_number'  => $r->trip_number,
+                'user_id'      => $r->user_id,
+                'user_name'    => $r->user->name,
+                'booked_for'   => $r->booked_for,
+                'pickup'       => $r->pickup,
+                'destination'  => $r->destination,
+                'vehicle'      => $r->vehicle,
+                'plate'        => $r->plate,
+                'trip_date'    => $r->trip_date,
+                'departure'    => $r->departure,
+                'eta'          => $r->eta,
+                'return_time'  => $r->return_time,
+                'return_date'  => $r->return_date,
             ]);
 
         return response()->json($requests);
+    }
+
+    // Return all users for the "book for" dropdown (vehicle admin only)
+    public function users()
+    {
+        abort_if(!Auth::user()->is_vehicle_admin, 403);
+        return response()->json(
+            User::orderBy('name')->get(['id', 'name'])
+        );
     }
 
     public function store(Request $request)
@@ -53,7 +64,14 @@ class VehicleRequestController extends Controller
             'eta'         => 'nullable',
             'return_time' => 'nullable',
             'return_date' => 'nullable|sometimes|date',
+            'booked_for'  => 'nullable|string|max:255',
         ]);
+
+        // Only vehicle admins can set booked_for
+        $bookedFor = null;
+        if (Auth::user()->is_vehicle_admin && !empty($validated['booked_for'])) {
+            $bookedFor = $validated['booked_for'];
+        }
 
         $tripDate   = $validated['trip_date'];
         $departure  = $validated['departure'];
@@ -68,13 +86,12 @@ class VehicleRequestController extends Controller
             $returnDate = $tripDate;
         }
 
-        // Build full datetime for overlap comparison
+        // Overlap check
         $newStart = Carbon::parse("$tripDate $departure");
         $newEnd   = $returnTime
             ? Carbon::parse("$returnDate $returnTime")
             : Carbon::parse("$returnDate 23:59:59");
 
-        // Overlap check for same plate
         $existing = VehicleRequest::where('plate', $validated['plate'])->get();
 
         foreach ($existing as $trip) {
@@ -93,7 +110,7 @@ class VehicleRequestController extends Controller
             }
         }
 
-        // Auto-increment trip number, resetting each month
+        // Auto-increment trip number per month
         $lastTrip   = VehicleRequest::whereYear('trip_date', Carbon::parse($tripDate)->year)
             ->whereMonth('trip_date', Carbon::parse($tripDate)->month)
             ->max('trip_number');
@@ -104,6 +121,7 @@ class VehicleRequestController extends Controller
             'user_id'     => Auth::id(),
             'return_date' => $returnDate,
             'trip_number' => $tripNumber,
+            'booked_for'  => $bookedFor,
         ]);
 
         $vehicleRequest->load('user:id,name');
@@ -113,6 +131,7 @@ class VehicleRequestController extends Controller
             'trip_number' => $vehicleRequest->trip_number,
             'user_id'     => $vehicleRequest->user_id,
             'user_name'   => $vehicleRequest->user->name,
+            'booked_for'  => $vehicleRequest->booked_for,
             'pickup'      => $vehicleRequest->pickup,
             'destination' => $vehicleRequest->destination,
             'vehicle'     => $vehicleRequest->vehicle,
@@ -129,7 +148,7 @@ class VehicleRequestController extends Controller
     {
         $vehicleRequest = VehicleRequest::findOrFail($id);
 
-        if ($vehicleRequest->user_id !== Auth::id()) {
+        if ($vehicleRequest->user_id !== Auth::id() && !Auth::user()->is_vehicle_admin) {
             return response()->json(['error' => 'Only the person who created this request can cancel it.'], 403);
         }
 
