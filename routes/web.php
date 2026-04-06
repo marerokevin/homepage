@@ -7,6 +7,7 @@ use App\Http\Controllers\PostController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\VehicleRequestController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\RoomBookingController;
 use Illuminate\Support\Facades\Route;
 
 // --- Authentication ---
@@ -50,6 +51,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/vehicle-requests',         [VehicleRequestController::class, 'index']);
     Route::post('/vehicle-requests',        [VehicleRequestController::class, 'store']);
     Route::delete('/vehicle-requests/{id}', [VehicleRequestController::class, 'destroy']);
+
+    // Room Bookin
+    Route::get('/room-bookings',         [RoomBookingController::class, 'index']);
+    Route::post('/room-bookings',        [RoomBookingController::class, 'store']);
+    Route::delete('/room-bookings/{id}', [RoomBookingController::class, 'destroy']);
 
     // Reports (admin only — enforced inside ReportController)
     Route::get('/reports/vehicle',            [ReportController::class, 'index'])->name('reports.vehicle');
