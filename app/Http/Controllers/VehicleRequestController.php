@@ -77,6 +77,13 @@ class VehicleRequestController extends Controller
         $departure  = $validated['departure'];
         $returnTime = $validated['return_time'] ?? null;
 
+        // Block booking if trip date+departure is in the past
+        if (\Carbon\Carbon::parse("$tripDate $departure")->isPast()) {
+            return response()->json([
+                'error' => 'You cannot book a trip that has already departed.'
+            ], 422);
+        }
+
         // Always compute return_date server-side
         if ($returnTime) {
             $returnDate = ($returnTime < $departure)

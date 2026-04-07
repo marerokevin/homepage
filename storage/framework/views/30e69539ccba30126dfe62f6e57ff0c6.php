@@ -383,10 +383,19 @@
             }
         }
         if (!otherMonth) {
-            cell.addEventListener('click', () => {
-                if (activeTab === 'vehicle') openModal(year, month, d);
-                else openRoomModal(year, month, d);
-            });
+            const cellDate = dateKey(year, month, d);
+            const isPast   = cellDate < todayStr();
+
+            if (isPast) {
+                // Grey out past dates on both tabs — no clicking
+                cell.style.opacity = '0.45';
+                cell.style.cursor  = 'not-allowed';
+            } else {
+                cell.addEventListener('click', () => {
+                    if (activeTab === 'vehicle') openModal(year, month, d);
+                    else openRoomModal(year, month, d);
+                });
+            }
         }
         return cell;
     }

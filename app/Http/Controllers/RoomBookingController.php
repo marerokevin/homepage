@@ -44,14 +44,24 @@ class RoomBookingController extends Controller
 
     public function store(Request $request)
     {
+        abort_if(!auth()->user(), 403);
+
         $validated = $request->validate([
             'room'         => 'required|string|in:' . implode(',', self::ROOMS),
             'title'        => 'required|string|max:255',
-            'booking_date' => 'required|date',
+            'booking_date' => 'required|date|after_or_equal:today',
             'start_time'   => 'required',
             'end_time'     => 'required',
             'attendees'    => 'required|integer|min:1',
         ]);
+
+        // Block booking if date+time is in the past
+        $bookingDateTime = \Carbon\Carbon::parse($validated['booking_date'] . ' ' . $validated['start_time']);
+        if ($bookingDateTime->isPast()) {
+            return response()->json([
+                'error' => 'You cannot book a time that has already passed.'
+            ], 422);
+        }
 
         // Overlap check: same room, same date, overlapping time
         $conflict = RoomBooking::where('room', $validated['room'])
