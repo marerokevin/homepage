@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\VehicleRequest;
 use App\Models\User;
+use App\Models\Vehicle;
+use App\Models\Driver;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
@@ -13,9 +15,9 @@ class VehicleRequestController extends Controller
     public function index(Request $request)
     {
         $month = $request->query('month', now()->month);
-        $year  = $request->query('year',  now()->year);
+        $year  = $request->query('year', now()->year);
 
-        $requests = VehicleRequest::with('user:id,name')
+        $requests = VehicleRequest::with(['user:id,name','vehicle','driver'])
             ->where(function ($q) use ($year, $month) {
                 $q->whereYear('trip_date', $year)->whereMonth('trip_date', $month);
             })
@@ -29,10 +31,14 @@ class VehicleRequestController extends Controller
                 'user_id'      => $r->user_id,
                 'user_name'    => $r->user->name,
                 'booked_for'   => $r->booked_for,
+
                 'pickup'       => $r->pickup,
                 'destination'  => $r->destination,
-                'vehicle'      => $r->vehicle,
-                'plate'        => $r->plate,
+
+                'vehicle'      => $r->vehicle?->name,
+                'plate'        => $r->vehicle?->plate,
+                'driver_name'  => $r->driver?->name,
+
                 'trip_date'    => $r->trip_date,
                 'departure'    => $r->departure,
                 'eta'          => $r->eta,
@@ -43,12 +49,25 @@ class VehicleRequestController extends Controller
         return response()->json($requests);
     }
 
-    // Return all users for the "book for" dropdown (vehicle admin only)
+    {
+        public function resources()
+        {
+            $vehicles = Vehicle::select('id', 'name')->get(); // just id & name for select
+            $drivers  = Driver::select('id', 'name')->get();
+
+            return response()->json([
+                'vehicles' => $vehicles,
+                'drivers'  => $drivers,
+            ]);
+        }
+    }
+
     public function users()
     {
         abort_if(!Auth::user()->is_vehicle_admin, 403);
+
         return response()->json(
-            User::orderBy('name')->get(['id', 'name'])
+            User::orderBy('name')->get(['id','name'])
         );
     }
 
@@ -57,49 +76,36 @@ class VehicleRequestController extends Controller
         $validated = $request->validate([
             'pickup'      => 'required|string',
             'destination' => 'required|string',
-            'vehicle'     => 'required|string',
-            'plate'       => 'required|string',
+            'vehicle_id'  => 'required|exists:vehicles,id',
+            'driver_id'   => 'required|exists:drivers,id',
             'trip_date'   => 'required|date',
             'departure'   => 'required',
             'eta'         => 'nullable',
             'return_time' => 'nullable',
-            'return_date' => 'nullable|sometimes|date',
             'booked_for'  => 'nullable|string|max:255',
         ]);
 
-        // Only vehicle admins can set booked_for
-        $bookedFor = null;
-        if (Auth::user()->is_vehicle_admin && !empty($validated['booked_for'])) {
-            $bookedFor = $validated['booked_for'];
-        }
+        $vehicle = Vehicle::findOrFail($validated['vehicle_id']);
 
         $tripDate   = $validated['trip_date'];
         $departure  = $validated['departure'];
         $returnTime = $validated['return_time'] ?? null;
 
-        // Block booking if trip date+departure is in the past
-        if (\Carbon\Carbon::parse("$tripDate $departure")->isPast()) {
-            return response()->json([
-                'error' => 'You cannot book a trip that has already departed.'
-            ], 422);
+        if (Carbon::parse("$tripDate $departure")->isPast()) {
+            return response()->json(['error' => 'Cannot book past trips.'], 422);
         }
 
-        // Always compute return_date server-side
-        if ($returnTime) {
-            $returnDate = ($returnTime < $departure)
-                ? Carbon::parse($tripDate)->addDay()->toDateString()
-                : $tripDate;
-        } else {
-            $returnDate = $tripDate;
-        }
+        $returnDate = $returnTime && $returnTime < $departure
+            ? Carbon::parse($tripDate)->addDay()->toDateString()
+            : $tripDate;
 
-        // Overlap check
         $newStart = Carbon::parse("$tripDate $departure");
         $newEnd   = $returnTime
             ? Carbon::parse("$returnDate $returnTime")
             : Carbon::parse("$returnDate 23:59:59");
 
-        $existing = VehicleRequest::where('plate', $validated['plate'])->get();
+        // Vehicle conflict
+        $existing = VehicleRequest::where('vehicle_id', $validated['vehicle_id'])->get();
 
         foreach ($existing as $trip) {
             $existStart = Carbon::parse($trip->trip_date . ' ' . $trip->departure);
@@ -108,58 +114,69 @@ class VehicleRequestController extends Controller
                 : Carbon::parse(($trip->return_date ?? $trip->trip_date) . ' 23:59:59');
 
             if ($newStart->lt($existEnd) && $newEnd->gt($existStart)) {
-                return response()->json([
-                    'error' => 'This vehicle is already scheduled during that time ('
-                        . $existStart->format('M d, Y g:i A') . ' – '
-                        . $existEnd->format('M d, Y g:i A')
-                        . '). Please choose a different time or vehicle.'
-                ], 422);
+                return response()->json(['error' => 'Vehicle already booked for this time.'], 422);
             }
         }
 
-        // Auto-increment trip number per month
-        $lastTrip   = VehicleRequest::whereYear('trip_date', Carbon::parse($tripDate)->year)
-            ->whereMonth('trip_date', Carbon::parse($tripDate)->month)
-            ->max('trip_number');
-        $tripNumber = ($lastTrip ?? 0) + 1;
+        // Driver conflict (NEW)
+        $driverTrips = VehicleRequest::where('driver_id', $validated['driver_id'])->get();
 
-        $vehicleRequest = VehicleRequest::create([
-            ...$validated,
+        foreach ($driverTrips as $trip) {
+            $existStart = Carbon::parse($trip->trip_date . ' ' . $trip->departure);
+            $existEnd   = $trip->return_time
+                ? Carbon::parse(($trip->return_date ?? $trip->trip_date) . ' ' . $trip->return_time)
+                : Carbon::parse(($trip->return_date ?? $trip->trip_date) . ' 23:59:59');
+
+            if ($newStart->lt($existEnd) && $newEnd->gt($existStart)) {
+                return response()->json(['error' => 'Driver already assigned for this time.'], 422);
+            }
+        }
+
+        $tripNumber = VehicleRequest::whereYear('trip_date', Carbon::parse($tripDate)->year)
+            ->whereMonth('trip_date', Carbon::parse($tripDate)->month)
+            ->max('trip_number') + 1;
+
+        $req = VehicleRequest::create([
             'user_id'     => Auth::id(),
+            'vehicle_id'  => $validated['vehicle_id'],
+            'driver_id'   => $validated['driver_id'],
+            'pickup'      => $validated['pickup'],
+            'destination' => $validated['destination'],
+            'trip_date'   => $tripDate,
+            'departure'   => $departure,
+            'eta'         => $validated['eta'],
+            'return_time' => $returnTime,
             'return_date' => $returnDate,
             'trip_number' => $tripNumber,
-            'booked_for'  => $bookedFor,
+            'booked_for'  => $validated['booked_for'] ?? null,
         ]);
 
-        $vehicleRequest->load('user:id,name');
+        $req->load(['user','vehicle','driver']);
 
         return response()->json([
-            'id'          => $vehicleRequest->id,
-            'trip_number' => $vehicleRequest->trip_number,
-            'user_id'     => $vehicleRequest->user_id,
-            'user_name'   => $vehicleRequest->user->name,
-            'booked_for'  => $vehicleRequest->booked_for,
-            'pickup'      => $vehicleRequest->pickup,
-            'destination' => $vehicleRequest->destination,
-            'vehicle'     => $vehicleRequest->vehicle,
-            'plate'       => $vehicleRequest->plate,
-            'trip_date'   => $vehicleRequest->trip_date,
-            'departure'   => $vehicleRequest->departure,
-            'eta'         => $vehicleRequest->eta,
-            'return_time' => $vehicleRequest->return_time,
-            'return_date' => $vehicleRequest->return_date,
+            'id'           => $req->id,
+            'user_id'      => $req->user_id,
+            'user_name'    => $req->user->name,
+            'vehicle'      => $req->vehicle->name,
+            'plate'        => $req->vehicle->plate,
+            'driver_name'  => $req->driver->name,
+            'destination'  => $req->destination,
+            'trip_date'    => $req->trip_date,
+            'departure'    => $req->departure,
+            'return_time'  => $req->return_time,
+            'return_date'  => $req->return_date,
         ], 201);
     }
 
     public function destroy($id)
     {
-        $vehicleRequest = VehicleRequest::findOrFail($id);
+        $req = VehicleRequest::findOrFail($id);
 
-        if ($vehicleRequest->user_id !== Auth::id() && !Auth::user()->is_vehicle_admin) {
-            return response()->json(['error' => 'Only the person who created this request can cancel it.'], 403);
+        if ($req->user_id !== Auth::id() && !Auth::user()->is_vehicle_admin) {
+            return response()->json(['error' => 'Unauthorized'], 403);
         }
 
-        $vehicleRequest->delete();
+        $req->delete();
 
         return response()->json(['success' => true]);
     }

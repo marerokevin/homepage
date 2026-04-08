@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RegisterController;
@@ -35,44 +36,45 @@ Route::patch('/manage-posts/{post}', [PostController::class, 'update'])->name('p
 // --- Protected Routes ---
 Route::middleware(['auth', 'verified'])->group(function () {
 
+// --- Verify OTP ---
+Route::get('/verify-otp', [OtpController::class, 'showForm'])->name('otp.form');
+Route::post('/verify-otp', [OtpController::class, 'verify'])->name('otp.verify');
+
     // Dashboard & Calendar
     Route::get('/dashboard', fn() => view('dashboard'))->name('dashboard');
     Route::get('/calendar', fn() => view('calendar'))->name('calendar');
 
     // Admin user management
-    Route::get('/admin/users',                          [UserController::class, 'index'])->name('admin.users');
-    Route::patch('/admin/users/{user}/toggle-vehicle',       [UserController::class, 'toggleVehicle']);
+    Route::get('/admin/users', [UserController::class, 'index'])->name('admin.users');
+    Route::patch('/admin/users/{user}/toggle-vehicle', [UserController::class, 'toggleVehicle']);
     Route::patch('/admin/users/{user}/toggle-vehicle-admin', [UserController::class, 'toggleVehicleAdmin']);
 
-    // Vehicle admin users dropdown
-    Route::get('/vehicle-requests/users', [VehicleRequestController::class, 'users']);
+    // Leave Routes
+    Route::get('/leaves', [LeaveController::class, 'index'])->name('leaves.index');
+    Route::get('/leaves/create', [LeaveController::class, 'create'])->name('leaves.create');
+    Route::post('/leaves', [LeaveController::class, 'store'])->name('leaves.store');
+    Route::patch('/leaves/{id}/approve', [LeaveController::class, 'approve'])->name('leaves.approve');
+    Route::patch('/leaves/{id}/reject',  [LeaveController::class, 'reject'])->name('leaves.reject');
 
-    // Vehicle Requests API
-    Route::get('/vehicle-requests',         [VehicleRequestController::class, 'index']);
-    Route::post('/vehicle-requests',        [VehicleRequestController::class, 'store']);
+    // Vehicle Requests
+    Route::get('/vehicle-requests', [VehicleRequestController::class, 'index']);
+    Route::post('/vehicle-requests', [VehicleRequestController::class, 'store']);
     Route::delete('/vehicle-requests/{id}', [VehicleRequestController::class, 'destroy']);
 
-    // Room Bookin
-    Route::get('/room-bookings',         [RoomBookingController::class, 'index']);
-    Route::post('/room-bookings',        [RoomBookingController::class, 'store']);
+    // Room Bookings
+    Route::get('/room-bookings', [RoomBookingController::class, 'index']);
+    Route::post('/room-bookings', [RoomBookingController::class, 'store']);
     Route::delete('/room-bookings/{id}', [RoomBookingController::class, 'destroy']);
 
-    // Reports (admin only — enforced inside ReportController)
-    Route::get('/reports/vehicle',            [ReportController::class, 'index'])->name('reports.vehicle');
+    // Reports
+    Route::get('/reports/vehicle', [ReportController::class, 'index'])->name('reports.vehicle');
     Route::get('/reports/vehicle/export/pdf', [ReportController::class, 'exportPdf'])->name('reports.vehicle.pdf');
     Route::get('/reports/vehicle/export/csv', [ReportController::class, 'exportCsv'])->name('reports.vehicle.csv');
 
-    // Blog Actions
-    Route::post('/manage-posts',              [PostController::class, 'store'])->name('posts.store');
-    Route::delete('/manage-posts/{post}',     [PostController::class, 'destroy'])->name('posts.destroy');
-    Route::get('/manage-posts/{post}/edit',   [PostController::class, 'edit'])->name('posts.edit');
-    Route::put('/manage-posts/{post}',        [PostController::class, 'update']);
-
     // Profile
-    Route::get('/profile',    [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile',  [ProfileController::class, 'update'])->name('profile.update');
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-
 });
 
 require __DIR__.'/auth.php';

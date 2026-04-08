@@ -108,13 +108,17 @@
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">🚗 Vehicle Make / Model</label>
-                    <input type="text" id="tripVehicle" placeholder="e.g. Toyota Innova"
-                        class="w-full px-3 py-2 rounded-xl border border-stone-300 dark:border-gray-700 bg-stone-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-100" />
+                    <select id="tripVehicle"
+                        class="w-full px-3 py-2 rounded-xl border border-stone-300 dark:border-gray-700 bg-stone-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-100">
+                        <option value="">Select vehicle...</option>
+                    </select>
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">🔢 Plate Number</label>
-                    <input type="text" id="tripPlate" placeholder="e.g. ABC 1234"
-                        class="w-full px-3 py-2 rounded-xl border border-stone-300 dark:border-gray-700 bg-stone-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-100" />
+                    <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Driver</label>
+                    <select id="tripDriver"
+                        class="w-full px-3 py-2 rounded-xl border border-stone-300 dark:border-gray-700 bg-stone-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-100">
+                        <option value="">Select driver...</option>
+                    </select>
                 </div>
             </div>
             <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:1rem;">
@@ -403,22 +407,31 @@
     // ── Vehicle Trip Modal ─────────────────────────────────────────
     function openModal(year, month, day) {
         selectedDate = dateKey(year, month, day);
+
         document.getElementById('modalDateTitle').textContent = `${MONTHS[month]} ${day}, ${year}`;
+
         document.getElementById('tripPickup').value      = DEFAULT_PICKUP;
         document.getElementById('tripDestination').value = '';
         document.getElementById('tripVehicle').value     = '';
-        document.getElementById('tripPlate').value       = '';
+        document.getElementById('tripDriver').value      = '';
         document.getElementById('tripDeparture').value   = '';
         document.getElementById('tripETA').value         = '';
         document.getElementById('tripReturn').value      = '';
         document.getElementById('tripReturnDate').value  = '';
+
         document.getElementById('overnightNotice').classList.add('hidden');
         document.getElementById('tripError').classList.add('hidden');
+
+        // 🔥 THIS IS WHAT YOU ARE MISSING
+        loadResources();
+
         if (IS_VEHICLE_ADMIN) {
             document.getElementById('bookedForSection').classList.remove('hidden');
             loadUsersDropdown();
         }
+
         renderTripList();
+
         document.getElementById('eventModal').classList.remove('hidden');
     }
 
@@ -457,7 +470,7 @@
             card.innerHTML = `
                 <div class="flex justify-between items-start">
                     <div class="font-semibold text-gray-800 dark:text-gray-100">
-                        🚗 ${trip.vehicle} <span class="text-xs font-normal text-stone-400 ml-1">${trip.plate}</span>
+                        🚗 ${trip.vehicle} <span class="text-xs font-normal text-stone-400 ml-1">${trip.driver}</span>
                     </div>
                     ${canCancel
                         ? `<button onclick="deleteTrip(${trip.id},'${trip.trip_date}','${trip.return_date ?? trip.trip_date}')" class="text-xs text-stone-300 hover:text-red-500 transition font-bold ml-2" title="Cancel">✕</button>`
@@ -492,19 +505,62 @@
         }
     }
 
+    let vehicleList = [];
+    let driverList  = [];
+
+    let resourcesLoaded = false;
+
+    async function loadResources() {
+        if (resourcesLoaded) return;
+
+        try {
+            const res = await fetch('/vehicle-requests/resources');
+            const data = await res.json();
+
+            vehicleList = data.vehicles;
+            driverList  = data.drivers;
+
+            const vSelect = document.getElementById('tripVehicle');
+            const dSelect = document.getElementById('tripDriver');
+
+            // Clear existing options and add default
+            vSelect.innerHTML = '<option value="">Select vehicle...</option>';
+            dSelect.innerHTML = '<option value="">Select driver...</option>';
+
+            // Populate vehicle select with name + plate
+            vehicleList.forEach(v => {
+                vSelect.appendChild(new Option(`${v.name} - ${v.plate || ''}`, v.id));
+            });
+
+            // Populate driver select
+            driverList.forEach(d => {
+                dSelect.appendChild(new Option(d.name, d.id));
+            });
+
+            resourcesLoaded = true;
+
+        } catch (err) {
+            console.error('Failed to load resources:', err);
+        }
+    }
+
     async function saveTrip() {
         const pickup      = document.getElementById('tripPickup').value.trim();
         const destination = document.getElementById('tripDestination').value.trim();
-        const vehicle     = document.getElementById('tripVehicle').value.trim();
-        const plate       = document.getElementById('tripPlate').value.trim();
+        //const vehicle     = document.getElementById('tripVehicle').value.trim();
+        //const plate       = document.getElementById('tripPlate').value.trim();
         const departure   = document.getElementById('tripDeparture').value;
         const eta         = document.getElementById('tripETA').value;
         const returnTime  = document.getElementById('tripReturn').value;
         const returnDate  = document.getElementById('tripReturnDate').value || null;
-        if (!destination || !vehicle || !plate || !departure) {
-            showTripError('Please fill in: Destination, Vehicle, Plate Number, and Departure time.');
+        const vehicle_id = document.getElementById('tripVehicle').value;
+        const driver_id  = document.getElementById('tripDriver').value;
+
+        if (!destination || !vehicle_id || !driver_id || !departure) {
+            showTripError('Please fill in: Destination, Vehicle, Driver, and Departure time.');
             return;
         }
+
         const btn = document.getElementById('saveTripBtn');
         btn.disabled = true; btn.textContent = 'Saving...';
         const bookedFor = IS_VEHICLE_ADMIN ? (document.getElementById('bookedFor').value || null) : null;
@@ -512,7 +568,7 @@
             const res  = await fetch('/vehicle-requests', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF_TOKEN, 'Accept': 'application/json' },
-                body: JSON.stringify({ pickup, destination, vehicle, plate, trip_date: selectedDate, departure, eta: eta || null, return_time: returnTime || null, return_date: returnDate, booked_for: bookedFor }),
+                body: JSON.stringify({ pickup, destination, vehicle_id, driver_id, trip_date: selectedDate, departure, eta: eta || null, return_time: returnTime || null, return_date: returnDate, booked_for: bookedFor }),
             });
             const data = await res.json();
             if (!res.ok) { showTripError(data.error || 'Failed to save request.'); return; }
