@@ -21,7 +21,7 @@
             <?php if(session()->has('url.intended') || !session()->has('_previous')): ?>
             <div id="login-alert" class="mb-6 flex items-center gap-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-800 dark:text-green-300 rounded-xl px-5 py-4 text-sm font-medium shadow-sm transition-opacity duration-700 opacity-0">
                 <span class="text-lg">✅</span>
-                Welcome back, <?php echo e(Auth::user()->name); ?>! You're now logged in.
+                Welcome, <?php echo e(Auth::user()->name); ?>! You're now logged in.
             </div>
             <script>
                 const alert = document.getElementById('login-alert');

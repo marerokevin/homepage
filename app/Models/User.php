@@ -26,6 +26,9 @@ class User extends Authenticatable
         'department',
         'is_vehicle_admin',
         'can_book_vehicle',
+        'otp',
+        'otp_expires_at',
+        'is_verified',
     ];
 
     /**
@@ -66,5 +69,20 @@ class User extends Authenticatable
             'vehicles' => Vehicle::orderBy('name')->get(),
             'drivers'  => Driver::orderBy('name')->get(),
         ]);
+    }
+
+    public function permission()
+    {
+        return $this->hasOne(Permission::class);
+    }
+
+    public function canPost()
+    {
+        return $this->permission?->can_post ?? false;
+    }
+
+    public function canDeletePost()
+    {
+        return $this->permission?->can_delete_post ?? false;
     }
 }

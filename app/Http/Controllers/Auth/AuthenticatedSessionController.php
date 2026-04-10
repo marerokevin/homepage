@@ -28,6 +28,17 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        $user = Auth::user();
+
+        // ✅ BLOCK UNVERIFIED USERS HERE
+        if (!$user->is_verified) {
+            Auth::logout();
+
+            return redirect()->route('otp.form')->withErrors([
+                'email' => 'Please verify your email first.'
+            ])->with('email', $user->email);
+        }
+
         return redirect()->intended(route('dashboard', absolute: false));
     }
 

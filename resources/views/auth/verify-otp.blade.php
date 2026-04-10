@@ -1,10 +1,22 @@
-<form method="POST" action="{{ route('otp.verify') }}">
-    @csrf
-    <label>Email</label>
-    <input type="email" name="email" required>
+<x-guest-layout>
+    <form method="POST" action="{{ route('otp.verify') }}">
+        @csrf
 
-    <label>OTP</label>
-    <input type="text" name="otp" required maxlength="6">
+        <input type="hidden" name="email" value="{{ $email ?? old('email') }}">
 
-    <button type="submit">Verify OTP</button>
-</form>
+        <div>
+            <x-input-label for="otp" value="Enter OTP" />
+            <x-text-input id="otp" class="block mt-1 w-full"
+                type="text" name="otp" maxlength="6"
+                required autofocus autocomplete="one-time-code" />
+            <p class="mt-1 text-xs text-gray-500">
+                Check your @crestecphil.com.ph inbox. OTP expires in 10 minutes.
+            </p>
+            <x-input-error :messages="$errors->get('otp')" class="mt-2" />
+        </div>
+
+        <div class="flex items-center justify-end mt-4">
+            <x-primary-button>Verify OTP</x-primary-button>
+        </div>
+    </form>
+</x-guest-layout>
