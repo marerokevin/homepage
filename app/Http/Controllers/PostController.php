@@ -80,10 +80,11 @@ class PostController extends Controller
         $request->user()->posts()->create([
             'title'      => $request->title,
             'body'       => $request->body,
+            'location'   => $request->location,
             'event_date' => $request->event_date ?? now()->format('Y-m-d'),
             'slug'       => $slug,
             'image'      => $imagePaths, // This will be saved as JSON thanks to the $casts in Post model
-            'tags' => $tags, // <-- Save tags here
+            'tags'       => $tags, // <-- Save tags here
         ]);
 
         return redirect()->back()->with('success', 'Post created successfully with ' . count($imagePaths) . ' images!');
@@ -93,15 +94,9 @@ class PostController extends Controller
      * Remove the specified post from storage.
      */
     public function destroy(Post $post)
-    {
-        if ($post->user_id !== Auth::id()) {
-            abort(403);
+        {
+            abort(403, 'Please use the OTP-verified delete flow.');
         }
-
-        $post->delete();
-
-        return redirect()->route('updates')->with('success', 'Post deleted!');
-    }
 
     // update
     public function update(Request $request, Post $post)

@@ -47,7 +47,7 @@
                             </td>
 
                             <td class="p-3 capitalize">
-                                {{ $leave->type }}
+                                {{ $leave->leave_type }}
                             </td>
 
                             <td class="p-3">

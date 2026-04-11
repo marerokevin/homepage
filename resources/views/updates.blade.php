@@ -201,7 +201,9 @@
                             @endif
                         </div>
                     </div>
-
+                    <div class="px-6 pb-2 text-xs text-stone-400 dark:text-gray-500">
+                        ✍️ {{ $post->user->name }}
+                    </div>
 
                     <div class="px-6 py-4 mt-auto grid grid-cols-2 items-center border-t border-gray-50 dark:border-gray-700 min-h-20">
                         <!-- Left: Read Article -->

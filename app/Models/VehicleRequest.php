@@ -19,6 +19,9 @@ class VehicleRequest extends Model
         'return_time',
         'booked_for',
         'return_date',
+        'vehicle_id',
+        'driver_id',
+        'driver',
     ];
     public function user()
     {

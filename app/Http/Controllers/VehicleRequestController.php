@@ -17,7 +17,7 @@ class VehicleRequestController extends Controller
         $month = $request->query('month', now()->month);
         $year  = $request->query('year', now()->year);
 
-        $requests = VehicleRequest::with(['user:id,name','vehicle','driver'])
+        $requests = VehicleRequest::with('user:id,name')
             ->where(function ($q) use ($year, $month) {
                 $q->whereYear('trip_date', $year)->whereMonth('trip_date', $month);
             })
@@ -35,9 +35,9 @@ class VehicleRequestController extends Controller
                 'pickup'       => $r->pickup,
                 'destination'  => $r->destination,
 
-                'vehicle'      => $r->vehicle?->name,
-                'plate'        => $r->vehicle?->plate,
-                'driver_name'  => $r->driver?->name,
+                'vehicle'      => $r->vehicle,
+                'plate'        => $r->plate,
+                'driver'       => $r->driver,
 
                 'trip_date'    => $r->trip_date,
                 'departure'    => $r->departure,
@@ -49,18 +49,16 @@ class VehicleRequestController extends Controller
         return response()->json($requests);
     }
 
-    {
         public function resources()
         {
             $vehicles = Vehicle::select('id', 'name')->get(); // just id & name for select
             $drivers  = Driver::select('id', 'name')->get();
 
             return response()->json([
-                'vehicles' => $vehicles,
-                'drivers'  => $drivers,
+                'vehicle' => $vehicles,
+                'driver'  => $drivers,
             ]);
         }
-    }
 
     public function users()
     {
@@ -76,8 +74,8 @@ class VehicleRequestController extends Controller
         $validated = $request->validate([
             'pickup'      => 'required|string',
             'destination' => 'required|string',
-            'vehicle_id'  => 'required|exists:vehicles,id',
-            'driver_id'   => 'required|exists:drivers,id',
+            'vehicle_id'  => 'required|exists:vehicle,id',
+            'driver_id'   => 'required|exists:driver,id',
             'trip_date'   => 'required|date',
             'departure'   => 'required',
             'eta'         => 'nullable',
@@ -86,6 +84,10 @@ class VehicleRequestController extends Controller
         ]);
 
         $vehicle = Vehicle::findOrFail($validated['vehicle_id']);
+
+        // ← ADD HERE
+        $vehicle = \App\Models\Vehicle::findOrFail($validated['vehicle_id']);
+        $driver  = \App\Models\Driver::findOrFail($validated['driver_id']);
 
         $tripDate   = $validated['trip_date'];
         $departure  = $validated['departure'];
@@ -138,8 +140,10 @@ class VehicleRequestController extends Controller
 
         $req = VehicleRequest::create([
             'user_id'     => Auth::id(),
+            'plate'       => $vehicle->plate,
             'vehicle_id'  => $validated['vehicle_id'],
             'driver_id'   => $validated['driver_id'],
+            'driver'      => $driver->name,
             'pickup'      => $validated['pickup'],
             'destination' => $validated['destination'],
             'trip_date'   => $tripDate,

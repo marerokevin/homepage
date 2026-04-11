@@ -5,6 +5,11 @@
 @section('content')
 <div class="max-w-2xl mx-auto mt-10 bg-white p-6 rounded shadow">
     <h2 class="text-2xl font-bold mb-6">File a Leave</h2>
+        <div class="bg-gray-100 p-4 rounded mb-4">
+            <h3 class="font-bold text-lg mb-2">Leave Credits</h3>
+            <p>Vacation Leave: <strong>{{ $user->vacation_leave_credits }}</strong></p>
+            <p>Sick Leave: <strong>{{ $user->sick_leave_credits }}</strong></p>
+        </div>
 
     @if ($errors->any())
         <div class="mb-4 p-4 bg-red-100 text-red-700 rounded">
@@ -43,8 +48,13 @@
             <textarea name="reason" id="reason" rows="3" class="w-full border px-3 py-2 rounded">{{ old('reason') }}</textarea>
         </div>
 
-        <div class="flex justify-end">
-            <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">Submit Leave</button>
+        <div class="flex justify-between">
+            <div class="flex justify-start">
+                <a href="{{ route('leaves.index') }}"class="bg-red-600 text-white px-6 py-2 rounded hover:bg-red-700">Cancel</a>
+            </div>
+            <div class="flex justify-start">
+                <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">Submit Leave</button>
+            </div>
         </div>
     </form>
 </div>
