@@ -74,6 +74,46 @@
                                 </span>
                             </td>
 
+
+                            <td class="p-3 flex gap-2">
+
+                                @if(auth()->user()->role === 'clinic' && $leave->status === 'pending' && $leave->leave_type === 'sick')
+                                    <form method="POST" action="{{ route('leaves.approve', $leave->id) }}">
+                                        @csrf
+                                        @method('PATCH')
+
+                                        <input type="text" name="clinic_notes" placeholder="Clinic remarks" required class="border p-1 text-xs">
+
+                                        <button class="bg-blue-600 text-white px-2 py-1 text-xs rounded">
+                                            Fit to work
+                                        </button>
+                                    </form>
+                                @endif
+
+                                @if(in_array(auth()->user()->role, ['hr','supervisor']) && $leave->status !== 'approved')
+                                    <form method="POST" action="{{ route('leaves.approve', $leave->id) }}">
+                                        @csrf
+                                        @method('PATCH')
+
+                                        <button class="bg-green-600 text-white px-2 py-1 text-xs rounded">
+                                            Approve
+                                        </button>
+                                    </form>
+                                @endif
+
+                                @if($leave->status !== 'approved')
+                                    <form method="POST" action="{{ route('leaves.reject', $leave->id) }}">
+                                        @csrf
+                                        @method('PATCH')
+
+                                        <button class="bg-red-600 text-white px-2 py-1 text-xs rounded">
+                                            Reject
+                                        </button>
+                                    </form>
+                                @endif
+
+                            </td>
+
                             <td class="p-3 flex gap-2">
 
                                 {{-- Approve --}}
@@ -81,9 +121,6 @@
                                     <form method="POST" action="{{ route('leaves.approve', $leave->id) }}">
                                         @csrf
                                         @method('PATCH')
-                                        <button class="bg-green-600 hover:bg-green-700 text-white px-2 py-1 rounded text-xs">
-                                            Approve
-                                        </button>
                                     </form>
 
                                     {{-- Reject --}}

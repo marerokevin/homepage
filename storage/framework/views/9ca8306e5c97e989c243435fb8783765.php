@@ -31,6 +31,32 @@
             </select>
         </div>
 
+        <select name="duration" id="duration" required>
+            <option value="full">Full Day</option>
+            <option value="half">Half Day</option>
+        </select>
+
+        <div id="halfDayOptions" style="display:none;">
+            <select name="half_day_type">
+                <option value="morning">Morning</option>
+                <option value="afternoon">Afternoon</option>
+            </select>
+        </div>
+
+        <script>
+        document.getElementById('duration').addEventListener('change', function () {
+            document.getElementById('halfDayOptions').style.display =
+                this.value === 'half' ? 'block' : 'none';
+        });
+        </script>
+
+        <label>Day Type</label>
+        <select name="day_period" class="form-control">
+            <option value="full">Full Day</option>
+            <option value="am">Half Day (Morning)</option>
+            <option value="pm">Half Day (Afternoon)</option>
+        </select>
+
         <div class="mb-4">
             <label for="start_date" class="block font-semibold mb-2">Start Date</label>
             <input type="date" name="start_date" id="start_date" value="<?php echo e(old('start_date')); ?>" class="w-full border px-3 py-2 rounded">

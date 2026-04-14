@@ -6,152 +6,152 @@ use Illuminate\Http\Request;
 use App\Models\Leave;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
-
 use Carbon\Carbon;
 
 class LeaveController extends Controller
 {
-    /**
-     * Show the list of leaves for the logged-in user and subordinates.
-     */
     public function index()
     {
         $user = auth()->user();
 
         if ($user->is_supervisor) {
-            // Supervisor sees all department leaves
-            $leaves = Leave::whereHas('user', function($query) use ($user) {
-                $query->where('department', $user->department);
-            })->orderBy('created_at', 'desc')->get();
+            $leaves = Leave::whereHas('user', function ($q) use ($user) {
+                $q->where('department', $user->department);
+            })->latest()->get();
         } else {
-            // Normal user sees only their own leaves
-            $leaves = Leave::where('user_id', $user->id)
-                ->orderBy('created_at', 'desc')
-                ->get();
+            $leaves = Leave::where('user_id', $user->id)->latest()->get();
         }
 
         return view('leaves.index', compact('leaves'));
     }
 
-    /**
-     * Show the form to create a new leave.
-     */
     public function create()
     {
-        $user = Auth::user(); // get logged-in user
-
-        return view('leaves.create', compact('user'));
+        return view('leaves.create', [
+            'user' => auth()->user()
+        ]);
     }
 
-    /**
-     * Handle storing a new leave request.
-     */
     public function store(Request $request)
     {
-        // 1. Validate first
         $validated = $request->validate([
             'leave_type' => 'required|in:vacation,sick',
             'start_date' => 'required|date|after_or_equal:today',
             'end_date'   => 'required|date|after_or_equal:start_date',
             'reason'     => 'nullable|string|max:1000',
+            'half_day'   => 'nullable|in:none,morning,afternoon',
         ]);
 
-        // Check for overlapping leaves
-        $overlap = Leave::where('user_id', Auth::id())
-            ->whereIn('status', ['pending', 'approved'])
-            ->where(function ($query) use ($validated) {
-                $query->whereBetween('start_date', [$validated['start_date'], $validated['end_date']])
-                      ->orWhereBetween('end_date', [$validated['start_date'], $validated['end_date']])
-                      ->orWhere(function ($q) use ($validated) {
-                          $q->where('start_date', '<=', $validated['start_date'])
-                            ->where('end_date', '>=', $validated['end_date']);
-                      });
-            })
-            ->exists();
-
-        if ($overlap) {
-            return back()->withErrors([
-                'start_date' => 'You already have a leave filed within this date range.'
-            ])->withInput();
-        }
-
-        // 2. Use Carbon ONCE
         $start = Carbon::parse($validated['start_date']);
         $end   = Carbon::parse($validated['end_date']);
 
-        // 3. Calculate days (EXCLUDE Sundays)
-        $days = collect(range(0, $start->diffInDays($end)))
-            ->map(fn ($i) => $start->copy()->addDays($i))
-            ->filter(fn ($date) => $date->dayOfWeek !== Carbon::SUNDAY)
-            ->count();
+        // 🚫 BLOCK OVERLAP
+        $overlap = Leave::where('user_id', Auth::id())
+            ->where('status', '!=', 'rejected')
+            ->where(function ($q) use ($validated) {
+                $q->whereBetween('start_date', [$validated['start_date'], $validated['end_date']])
+                  ->orWhereBetween('end_date', [$validated['start_date'], $validated['end_date']]);
+            })->exists();
 
-        // 4. Prevent invalid leave
-        if ($days <= 0) {
-            return back()->withErrors([
-                'start_date' => 'Selected dates do not contain valid leave days.'
-            ])->withInput();
+        if ($overlap) {
+            return back()->withErrors(['error' => 'Overlapping leave exists'])->withInput();
         }
 
-        // 5. Save (DO NOT TOUCH $days anymore)
+        // ✅ CALCULATE DAYS (NO SUNDAYS)
+        $days = 0;
+        for ($date = $start->copy(); $date->lte($end); $date->addDay()) {
+            if ($date->isSunday()) continue;
+            $days++;
+        }
+
+        // ✅ HALF DAY
+        if (!empty($validated['half_day']) && $validated['half_day'] !== 'none') {
+            $days -= 0.5;
+        }
+
+        // ✅ STATUS FLOW
+        $status = $validated['leave_type'] === 'sick'
+            ? 'pending_clinic'
+            : 'pending';
+
         Leave::create([
             'user_id'    => Auth::id(),
             'leave_type' => $validated['leave_type'],
             'start_date' => $validated['start_date'],
             'end_date'   => $validated['end_date'],
             'days'       => $days,
-            'reason'     => $validated['reason'] ?? null,
-            'status'     => 'pending',
+            'reason'     => $validated['reason'],
+            'status'     => $status,
+            'half_day'   => $validated['half_day'] ?? 'none'
         ]);
 
-        return redirect()->route('leaves.index')
-            ->with('success', 'Leave request submitted successfully.');
+        return redirect()->route('leaves.index')->with('success', 'Leave submitted.');
     }
 
-    public function approve($id)
+    public function approve(Request $request, $id)
     {
         $leave = Leave::findOrFail($id);
+        $user  = $leave->user;
 
-        // prevent double approval
-        if ($leave->status !== 'pending') {
-            return back()->withErrors(['error' => 'Leave already processed']);
-        }
+        // 🏥 CLINIC STEP
+        if (auth()->user()->role === 'clinic' && $leave->status === 'pending_clinic') {
 
-        $user = User::findOrFail($leave->user_id);
+            $request->validate([
+                'clinic_notes' => 'required|string|max:1000',
+                'fit_to_work'  => 'required|boolean'
+            ]);
 
-        // check credits before approving
-        if ($leave->leave_type === 'vacation') {
-            if ($user->vacation_leave_credits < $leave->days) {
-                return back()->withErrors(['error' => 'Not enough vacation leave credits']);
+            $leave->clinic_notes = $request->clinic_notes;
+
+            if ($request->fit_to_work) {
+                // FIT → REJECT
+                $leave->status = 'rejected';
+            } else {
+                // NOT FIT → PROCEED
+                $leave->status = 'clinic_approved';
             }
 
-            $user->vacation_leave_credits -= $leave->days;
+            $leave->approved_by = auth()->id();
+            $leave->save();
+
+            return back()->with('success', 'Clinic evaluation submitted');
         }
 
-        if ($leave->leave_type === 'sick') {
-            if ($user->sick_leave_credits < $leave->days) {
-                return back()->withErrors(['error' => 'Not enough sick leave credits']);
+        // 🧾 HR / SUPERVISOR FINAL APPROVAL
+        if (in_array(auth()->user()->role, ['hr','supervisor']) && $leave->status === 'clinic_approved') {
+
+            if ($leave->leave_type === 'vacation') {
+                if ($user->vacation_leave_credits < $leave->days) {
+                    return back()->withErrors(['error' => 'Not enough vacation credits']);
+                }
+                $user->vacation_leave_credits -= $leave->days;
             }
 
-            $user->sick_leave_credits -= $leave->days;
+            if ($leave->leave_type === 'sick') {
+                if ($user->sick_leave_credits < $leave->days) {
+                    return back()->withErrors(['error' => 'Not enough sick credits']);
+                }
+                $user->sick_leave_credits -= $leave->days;
+            }
+
+            $user->save();
+
+            $leave->status = 'approved';
+            $leave->approved_by = auth()->id();
+            $leave->save();
+
+            return back()->with('success', 'Leave approved');
         }
 
-        // save user deduction
-        $user->save();
-
-        // approve leave
-        $leave->status = 'approved';
-        $leave->approved_by = Auth::id();
-        $leave->save();
-
-        return back()->with('success', 'Leave approved and credits deducted');
+        return back()->withErrors(['error' => 'Invalid approval flow']);
     }
 
     public function reject($id)
     {
         $leave = Leave::findOrFail($id);
 
-        if ($leave->status !== 'pending') {
-            return back()->withErrors(['error' => 'Leave already processed']);
+        if ($leave->status === 'approved') {
+            return back()->withErrors(['error' => 'Already approved']);
         }
 
         $leave->status = 'rejected';
