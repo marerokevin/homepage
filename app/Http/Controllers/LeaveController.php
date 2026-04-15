@@ -14,12 +14,31 @@ class LeaveController extends Controller
     {
         $user = auth()->user();
 
-        if ($user->is_supervisor) {
+        // 👤 EMPLOYEE → only own leaves
+        if ($user->role === 'employee') {
+            $leaves = Leave::where('user_id', $user->id)
+                ->latest()
+                ->get();
+        }
+
+        // 🏥 NURSE → ALL pending clinic leaves
+        elseif ($user->role === 'nurse') {
+            $leaves = Leave::where('status', 'pending_clinic')
+                ->latest()
+                ->get();
+        }
+
+        // 🧑‍💼 SUPERVISOR → same department only
+        elseif ($user->role === 'supervisor') {
             $leaves = Leave::whereHas('user', function ($q) use ($user) {
-                $q->where('department', $user->department);
-            })->latest()->get();
-        } else {
-            $leaves = Leave::where('user_id', $user->id)->latest()->get();
+                    $q->where('department', $user->department);
+                })
+                ->latest()
+                ->get();
+        }
+
+        else {
+            $leaves = collect(); // fallback, empty
         }
 
         return view('leaves.index', compact('leaves'));
@@ -87,49 +106,32 @@ class LeaveController extends Controller
 
         return redirect()->route('leaves.index')->with('success', 'Leave submitted.');
     }
-
     public function approve(Request $request, $id)
     {
         $leave = Leave::findOrFail($id);
-        $user  = $leave->user;
 
-        // 🏥 CLINIC STEP
-        if (auth()->user()->role === 'clinic' && $leave->status === 'pending_clinic') {
 
-            $request->validate([
-                'clinic_notes' => 'required|string|max:1000',
-                'fit_to_work'  => 'required|boolean'
-            ]);
+        // =========================
+        // SUPERVISOR LOGIC
+        // =========================
+        if (auth()->user()->is_supervisor) {
 
-            $leave->clinic_notes = $request->clinic_notes;
-
-            if ($request->fit_to_work) {
-                // FIT → REJECT
-                $leave->status = 'rejected';
-            } else {
-                // NOT FIT → PROCEED
-                $leave->status = 'clinic_approved';
+            if ($leave->status !== 'pending') {
+                return back()->withErrors(['error' => 'Already processed']);
             }
 
-            $leave->approved_by = auth()->id();
-            $leave->save();
-
-            return back()->with('success', 'Clinic evaluation submitted');
-        }
-
-        // 🧾 HR / SUPERVISOR FINAL APPROVAL
-        if (in_array(auth()->user()->role, ['hr','supervisor']) && $leave->status === 'clinic_approved') {
+            $user = $leave->user;
 
             if ($leave->leave_type === 'vacation') {
                 if ($user->vacation_leave_credits < $leave->days) {
-                    return back()->withErrors(['error' => 'Not enough vacation credits']);
+                    return back()->withErrors(['error' => 'Not enough credits']);
                 }
                 $user->vacation_leave_credits -= $leave->days;
             }
 
             if ($leave->leave_type === 'sick') {
                 if ($user->sick_leave_credits < $leave->days) {
-                    return back()->withErrors(['error' => 'Not enough sick credits']);
+                    return back()->withErrors(['error' => 'Not enough credits']);
                 }
                 $user->sick_leave_credits -= $leave->days;
             }
@@ -143,7 +145,64 @@ class LeaveController extends Controller
             return back()->with('success', 'Leave approved');
         }
 
-        return back()->withErrors(['error' => 'Invalid approval flow']);
+        abort(403);
+    }
+
+    public function clinicIndex()
+    {
+        if (auth()->user()->role !== 'nurse') {
+            abort(403);
+        }
+
+        $leaves = Leave::where('status', 'pending_clinic')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('leaves.clinic.index', compact('leaves'));
+    }
+
+    public function clinicShow($id)
+    {
+        if (auth()->user()->role !== 'nurse') {
+            abort(403);
+        }
+
+        $leave = Leave::findOrFail($id);
+
+        if ($leave->status !== 'pending_clinic') {
+            return back()->withErrors(['error' => 'Invalid state']);
+        }
+
+        return view('leaves.clinic.show', compact('leave'));
+    }
+
+    public function clinicUpdate(Request $request, $id)
+    {
+        if (auth()->user()->role !== 'nurse') {
+            abort(403);
+        }
+
+        $leave = Leave::findOrFail($id);
+
+        if ($leave->status !== 'pending_clinic') {
+            return back()->withErrors(['error' => 'Invalid state']);
+        }
+
+        $request->validate([
+            'result' => 'required|in:fit,not_fit',
+            'notes'  => 'nullable|string'
+        ]);
+
+        $leave->clinic_notes = $request->notes;
+
+        $leave->status = $request->result === 'fit'
+            ? 'fit_to_work'
+            : 'not_fit';
+
+        $leave->save();
+
+        return redirect()->route('leaves.clinic')
+            ->with('success', 'Evaluation saved');
     }
 
     public function reject($id)
@@ -159,5 +218,20 @@ class LeaveController extends Controller
         $leave->save();
 
         return back()->with('success', 'Leave rejected');
+    }
+
+    public function clinic()
+    {
+        // ONLY nurse should access this
+        if (auth()->user()->role !== 'nurse') {
+            abort(403);
+        }
+
+        $leaves = Leave::where('status', 'pending_clinic')
+            ->with('user')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('leaves.clinic', compact('leaves'));
     }
 }

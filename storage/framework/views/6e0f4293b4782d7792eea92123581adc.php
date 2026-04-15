@@ -78,40 +78,29 @@
 
                                 </span>
                             </td>
+                            <td class="p-3">
 
-
-                            <td class="p-3 flex gap-2">
-
-                                <?php if(auth()->user()->role === 'clinic' && $leave->status === 'pending' && $leave->leave_type === 'sick'): ?>
-                                    <form method="POST" action="<?php echo e(route('leaves.approve', $leave->id)); ?>">
-                                        <?php echo csrf_field(); ?>
-                                        <?php echo method_field('PATCH'); ?>
-
-                                        <input type="text" name="clinic_notes" placeholder="Clinic remarks" required class="border p-1 text-xs">
-
-                                        <button class="bg-blue-600 text-white px-2 py-1 text-xs rounded">
-                                            Fit to work
-                                        </button>
-                                    </form>
+                                <?php if($leave->status === 'pending_clinic' && auth()->user()->role === 'nurse'): ?>
+                                    <a href="<?php echo e(route('leaves.clinic.show', $leave->id)); ?>"
+                                       class="bg-blue-600 text-white px-2 py-1 rounded text-xs">
+                                        Evaluate
+                                    </a>
                                 <?php endif; ?>
 
-                                <?php if(in_array(auth()->user()->role, ['hr','supervisor']) && $leave->status !== 'approved'): ?>
+                                
+                                <?php if(auth()->user()->is_supervisor && $leave->status === 'pending'): ?>
                                     <form method="POST" action="<?php echo e(route('leaves.approve', $leave->id)); ?>">
                                         <?php echo csrf_field(); ?>
                                         <?php echo method_field('PATCH'); ?>
-
-                                        <button class="bg-green-600 text-white px-2 py-1 text-xs rounded">
+                                        <button class="bg-green-600 px-2 py-1 text-white rounded text-xs">
                                             Approve
                                         </button>
                                     </form>
-                                <?php endif; ?>
 
-                                <?php if($leave->status !== 'approved'): ?>
                                     <form method="POST" action="<?php echo e(route('leaves.reject', $leave->id)); ?>">
                                         <?php echo csrf_field(); ?>
                                         <?php echo method_field('PATCH'); ?>
-
-                                        <button class="bg-red-600 text-white px-2 py-1 text-xs rounded">
+                                        <button class="bg-red-600 px-2 py-1 text-white rounded text-xs">
                                             Reject
                                         </button>
                                     </form>
@@ -119,26 +108,6 @@
 
                             </td>
 
-                            <td class="p-3 flex gap-2">
-
-                                
-                                <?php if($leave->status === 'pending'): ?>
-                                    <form method="POST" action="<?php echo e(route('leaves.approve', $leave->id)); ?>">
-                                        <?php echo csrf_field(); ?>
-                                        <?php echo method_field('PATCH'); ?>
-                                    </form>
-
-                                    
-                                    <form method="POST" action="<?php echo e(route('leaves.reject', $leave->id)); ?>">
-                                        <?php echo csrf_field(); ?>
-                                        <?php echo method_field('PATCH'); ?>
-                                        <button class="bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded text-xs">
-                                            Reject
-                                        </button>
-                                    </form>
-                                <?php endif; ?>
-
-                            </td>
                         </tr>
                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                         <tr>

@@ -50,11 +50,14 @@ Route::middleware(['auth'])->group(function () {
     Route::patch('/admin/users/{user}/toggle-vehicle-admin', [UserController::class, 'toggleVehicleAdmin']);
 
     // Leave Routes
-    Route::get('/leaves',                  [LeaveController::class, 'index'])->name('leaves.index');
-    Route::get('/leaves/create',           [LeaveController::class, 'create'])->name('leaves.create');
-    Route::post('/leaves',                 [LeaveController::class, 'store'])->name('leaves.store');
-    Route::patch('/leaves/{id}/approve',   [LeaveController::class, 'approve'])->name('leaves.approve');
-    Route::patch('/leaves/{id}/reject',    [LeaveController::class, 'reject'])->name('leaves.reject');
+    Route::get('/leaves',                   [LeaveController::class, 'index'])->name('leaves.index');
+    Route::get('/leaves/create',            [LeaveController::class, 'create'])->name('leaves.create');
+    Route::post('/leaves',                  [LeaveController::class, 'store'])->name('leaves.store');
+    Route::patch('/leaves/{id}/approve',    [LeaveController::class, 'approve'])->name('leaves.approve');
+    Route::patch('/leaves/{id}/reject',     [LeaveController::class, 'reject'])->name('leaves.reject');
+    Route::get('/clinic/leaves',            [LeaveController::class, 'clinicIndex'])->name('leaves.clinic');
+    Route::get('/clinic/leaves/{id}',       [LeaveController::class, 'clinicShow'])->name('leaves.clinic.show');
+    Route::patch('/clinic/leaves/{id}',     [LeaveController::class, 'clinicUpdate'])->name('leaves.clinic.update');
 
     // Vehicle Requests — /users must come before /{id}
     Route::get('/vehicle-requests/users',    [VehicleRequestController::class, 'users']);
