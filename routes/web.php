@@ -56,8 +56,8 @@ Route::middleware(['auth'])->group(function () {
     Route::patch('/leaves/{id}/approve',    [LeaveController::class, 'approve'])->name('leaves.approve');
     Route::patch('/leaves/{id}/reject',     [LeaveController::class, 'reject'])->name('leaves.reject');
     Route::get('/clinic/leaves',            [LeaveController::class, 'clinicIndex'])->name('leaves.clinic');
+    Route::patch('/clinic/leaves/{id}',     [LeaveController::class, 'clinicEvaluate'])->name('leaves.clinic.evaluate');
     Route::get('/clinic/leaves/{id}',       [LeaveController::class, 'clinicShow'])->name('leaves.clinic.show');
-    Route::patch('/clinic/leaves/{id}',     [LeaveController::class, 'clinicUpdate'])->name('leaves.clinic.update');
 
     // Vehicle Requests — /users must come before /{id}
     Route::get('/vehicle-requests/users',    [VehicleRequestController::class, 'users']);

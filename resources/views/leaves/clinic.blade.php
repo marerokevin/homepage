@@ -31,30 +31,49 @@
                         <td class="p-3">{{ $leave->reason }}</td>
 
                         <td class="p-3 flex gap-2">
+                        <form method="POST" action="{{ route('leaves.clinic.evaluate', $leave->id) }}">
+                            @csrf
+                            @method('PATCH')
 
-                            {{-- FIT TO WORK (NO LEAVE) --}}
-                            <form method="POST" action="{{ route('leaves.approve', $leave->id) }}">
-                                @csrf
-                                @method('PATCH')
+                            {{-- Symptoms --}}
+                            <label class="block text-xs font-semibold">Symptoms Felt</label>
+                            <textarea name="symptoms" required class="border p-1 w-full mb-2"></textarea>
 
-                                <input type="hidden" name="clinic_result" value="fit">
+                            {{-- Medication --}}
+                            <label class="block text-xs font-semibold">Medication Taken</label>
+                            <textarea name="medication" class="border p-1 w-full mb-2"></textarea>
 
-                                <button class="bg-green-600 text-white px-2 py-1 rounded text-xs">
+                            {{-- Visited Clinic --}}
+                            <label class="block text-xs font-semibold">Visited Hospital/Clinic?</label>
+                            <select name="visited_clinic" class="border p-1 w-full mb-2" required>
+                                <option value="1">Yes</option>
+                                <option value="0">No</option>
+                            </select>
+
+                            {{-- Symptoms still present --}}
+                            <label class="block text-xs font-semibold">Symptoms Still Present?</label>
+                            <select name="symptoms_present" class="border p-1 w-full mb-2" required>
+                                <option value="1">Yes</option>
+                                <option value="0">No</option>
+                            </select>
+
+                            {{-- Remarks --}}
+                            <label class="block text-xs font-semibold">Clinic Remarks</label>
+                            <textarea name="clinic_notes" class="border p-1 w-full mb-2"></textarea>
+
+                            {{-- Decision --}}
+                            <div class="flex gap-2 mt-2">
+                                <button name="decision" value="fit"
+                                    class="bg-green-600 text-white px-2 py-1 rounded">
                                     Fit to Work
                                 </button>
-                            </form>
 
-                            {{-- NOT FIT (CONTINUE LEAVE) --}}
-                            <form method="POST" action="{{ route('leaves.approve', $leave->id) }}">
-                                @csrf
-                                @method('PATCH')
-
-                                <input type="hidden" name="clinic_result" value="not_fit">
-
-                                <button class="bg-yellow-600 text-white px-2 py-1 rounded text-xs">
+                                <button name="decision" value="unfit"
+                                    class="bg-red-600 text-white px-2 py-1 rounded">
                                     Not Fit
                                 </button>
-                            </form>
+                            </div>
+                        </form>
 
                         </td>
                     </tr>

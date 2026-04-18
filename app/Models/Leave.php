@@ -23,4 +23,19 @@ class Leave extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function clinicEvaluations()
+    {
+        return $this->hasMany(LeaveClinicEvaluation::class);
+    }
+
+    public function isPendingClinic()
+    {
+        return $this->status === 'pending_clinic';
+    }
+
+    public function isApproved()
+    {
+        return $this->status === 'approved';
+    }
 }

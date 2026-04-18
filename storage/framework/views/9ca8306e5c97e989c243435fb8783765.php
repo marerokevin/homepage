@@ -58,17 +58,6 @@
 
         
         <div>
-            <label class="block text-sm font-semibold mb-1 text-gray-700 dark:text-gray-300">Day Type</label>
-            <select name="day_period"
-                class="w-full border border-stone-300 dark:border-gray-700 bg-stone-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-3 py-2 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-100">
-                <option value="full">Full Day</option>
-                <option value="am">Half Day (Morning)</option>
-                <option value="pm">Half Day (Afternoon)</option>
-            </select>
-        </div>
-
-        
-        <div>
             <label for="start_date" class="block text-sm font-semibold mb-1 text-gray-700 dark:text-gray-300">Start Date</label>
             <input type="date" name="start_date" id="start_date" value="<?php echo e(old('start_date')); ?>"
                 class="w-full border border-stone-300 dark:border-gray-700 bg-stone-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-3 py-2 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-100" />
